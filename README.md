@@ -1,2 +1,2 @@
 # TaskBruwer
-A simple task management dashboard
+A task management dashboard.
