@@ -1,5 +1,7 @@
 <template>
-  <h1 class=" bg-gray-700">Dashboard Page</h1>
+  <div class="flex justify-center">
+    <h1 class=" text-3xl">Dashboard Page</h1>
+  </div>
 </template>
 
 <script setup>

@@ -1,7 +1,7 @@
 
 <template>
   <Header />
-  <main class=" bg-gray-700 max-w-4xl mx-auto">
+  <main class="mx-2">
     <RouterView />
   </main>
 </template>
