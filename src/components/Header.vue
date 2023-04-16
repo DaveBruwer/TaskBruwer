@@ -12,8 +12,8 @@
         <a class="mx-2 hidden md:inline hover:opacity-75 " href="#">Projects</a>
       </nav>
       <nav class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="login register">
-        <a class="mx-2 hidden md:inline hover:opacity-75 " href="#">Log In</a>
-        <router-link to="/register" class="mx-2 hidden md:inline hover:opacity-75 ">register</router-link>
+        <router-link to="/login" class="mx-2 hidden md:inline hover:opacity-75 ">Log In</router-link>
+        <router-link to="/register" class="mx-2 hidden md:inline hover:opacity-75 ">Register</router-link>
       </nav>
     </section>
     <section id="mobile-menu" class="rounded absolute top-0 bg-black w-full text-4xl flex-col justify-center" :class="[showMobileMenu ? 'flex' : 'hidden']">
@@ -23,7 +23,7 @@
         <router-link to="/dashboard" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Dasboard</router-link>
         <a class="width-full text-center py-6 hover:opacity-75" href="#">Tasks</a>
         <a class="width-full text-center py-6 hover:opacity-75" href="#">Projects</a>
-        <a class="width-full text-center py-6 hover:opacity-75" href="#">Log In</a>
+        <router-link to="/login" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Log In</router-link>
         <router-link to="/register" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Register</router-link>
       </nav>
     </section>
