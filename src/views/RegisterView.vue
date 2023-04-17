@@ -30,25 +30,25 @@
       <div class=" text-sm mb-1">
         <div v-if="v$.confirmPassword.$error" class=" text-red-500 font-bold">{{ v$.confirmPassword.$errors[0].$message }}</div>
         <div v-else>This needs to match the password above.</div>
-        <div>{{ v$.password.$model }}</div>
-        <div>{{ v$.confirmPassword.$model }}</div>
-        <div>{{ formData.password }}</div>
-        <div>{{ formData.confirmPassword }}</div>
-
       </div>
       <div class="mt-2 flex justify-around">
-        <button type="submit">Register</button>
+        <button type="submit" :disabled="disableSubmit">Register</button>
         <router-link to="/login">Log In</router-link>
       </div>
     </form>
   </div>
-  
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength, maxLength, sameAs } from '@vuelidate/validators'
+import { createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
+import { auth, db } from '../firebase'
+import { doc, setDoc } from '@firebase/firestore';
+import router from '../router';
+
+const disableSubmit = ref(false)
 
 const formData = reactive({
   displayName: '',
@@ -56,7 +56,7 @@ const formData = reactive({
   lastName: '',
   email: '',
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
 })
 
 //#region Vuelidate
@@ -75,14 +75,33 @@ const v$ = useVuelidate(rules, formData)
 //#endregion Vuelidate
 
 
-// Function that is called whan form is submitted.
+// Function that is called when form is submitted.
 async function submitFn() {
+  disableSubmit.value = true
+
   const isFormValid = await v$.value.$validate()
 
   if(isFormValid) {
-    alert("Register Triggered")
+    console.log('registering new user . . .')
+
+    await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+    .then( async () => {
+      await updateProfile(auth.currentUser, {displayName: formData.displayName})
+    }).then( async () => {
+      await setDoc(doc(db, 'users', auth.currentUser.uid), {
+        displayName: formData.displayName,
+        firstNames: formData.firstNames,
+        lastName: formData.lastName
+      })
+    }).then( () => {
+      router.push('/')
+    }).catch((error) => {
+      console.log(error.message)
+      alert(error.message)
+    })
   } else {
-    alert("Error: Please double check that all the form fields are filled in and valid.")
+    alert("Invalid form data.")
+    disableSubmit.value = false
   }
   
 }

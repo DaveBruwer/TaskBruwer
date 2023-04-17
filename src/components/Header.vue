@@ -8,10 +8,14 @@
       <button id="hamburger-button" class="text-3xl md:hidden focust:outline-none mx-2" @click="() => {showMobileMenu = true}">&#9776</button>
       <nav class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="main">
         <router-link to="/dashboard" class="mx-2 hidden md:inline hover:opacity-75 ">Dasboard</router-link>
-        <a class="mx-2 hidden md:inline hover:opacity-75 " href="#">Tasks</a>
+        <a @click.prevent="logCurrentUser" class="mx-2 hidden md:inline hover:opacity-75 " href="#">Tasks</a>
         <a class="mx-2 hidden md:inline hover:opacity-75 " href="#">Projects</a>
       </nav>
-      <nav class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="login register">
+      <nav v-if="authStore.currentUser" class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="login register">
+        <router-link to="/account" class="mx-2 hidden md:inline hover:opacity-75 ">{{ authStore.currentUser.displayName }}</router-link>
+        <a @click.prevent="logOut" class="mx-2 hidden md:inline hover:opacity-75 " href="#">Log Out</a>
+      </nav>
+      <nav v-else class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="login register">
         <router-link to="/login" class="mx-2 hidden md:inline hover:opacity-75 ">Log In</router-link>
         <router-link to="/register" class="mx-2 hidden md:inline hover:opacity-75 ">Register</router-link>
       </nav>
@@ -21,10 +25,16 @@
       <nav class="flex flex-col min-h-screen items-center py-8" aria-label="mobile">
         <router-link to="/" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Home</router-link>
         <router-link to="/dashboard" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Dasboard</router-link>
-        <a class="width-full text-center py-6 hover:opacity-75" href="#">Tasks</a>
+        <a @click.prevent="logCurrentUser" class="width-full text-center py-6 hover:opacity-75" href="#">Tasks</a>
         <a class="width-full text-center py-6 hover:opacity-75" href="#">Projects</a>
-        <router-link to="/login" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Log In</router-link>
-        <router-link to="/register" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Register</router-link>
+        <div v-if="authStore.currentUser" class="flex flex-col">
+          <router-link to="/account" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">{{ authStore.currentUser.displayName }}</router-link>
+          <a @click.prevent="logOut" class="width-full text-center py-6 hover:opacity-75" href="#">Log Out</a>
+        </div>
+        <div v-else class="flex flex-col">
+          <router-link to="/login" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Log In</router-link>
+          <router-link to="/register" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Register</router-link>
+        </div>
       </nav>
     </section>
   </header>
@@ -32,6 +42,12 @@
 
 <script setup>
 import {ref} from 'vue'
+import { useAuthStore } from '../store/authStore';
+import { signOut } from '@firebase/auth';
+import { auth } from '../firebase';
+import router from '../router';
+
+const authStore = useAuthStore()
 
 //#region Code for toggling mobile menu visibility
 
@@ -49,9 +65,24 @@ window.addEventListener("resize", viewportWidthChanged)
 
 //#endregion Code for toggling mobile menu visibility
 
+const disableLogout = ref(false)
 
+async function logOut() {
+  disableLogout.value = true
+  console.log('signing out . . .')
+  await signOut(auth)
+  .then(() => {
+    router.push('/')
+  }).catch((error) => {
+    console.log(error.message)
+    alert(error.message)
+    disableLogout.value = false
+  })
+}
 
-
+function logCurrentUser() {
+  console.log(authStore.currentUser)
+}
 
 </script>
 

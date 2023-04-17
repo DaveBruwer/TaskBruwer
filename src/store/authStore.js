@@ -5,3 +5,4 @@ export const useAuthStore = defineStore("auth", {
     currentUser: null
   })
 })
+
