@@ -10,7 +10,7 @@
         <div v-if="v$.password.$error" class=" text-red-500 font-bold">{{ v$.password.$errors[0].$message }}</div>
       </div>
       <div class="mt-2 flex justify-around">
-        <button type="submit">Log In</button>
+        <button :disabled="disableLogin" type="submit">Log In</button>
         <router-link to="/register">Register</router-link>
       </div>
     </form>
@@ -19,9 +19,12 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue';
+import { ref, reactive } from 'vue';
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, minLength, maxLength, sameAs } from '@vuelidate/validators'
+import { signInWithEmailAndPassword } from '@firebase/auth';
+import { auth } from '../firebase';
+import router from '../router';
 
 const formData = reactive({
   email: '',
@@ -41,13 +44,25 @@ const v$ = useVuelidate(rules, formData)
 
 
 // Function that is called whan form is submitted.
+const disableLogin = ref(false)
+
 async function submitFn() {
+  disableLogin.value = true
   const isFormValid = await v$.value.$validate()
 
   if(isFormValid) {
-    alert("Register Triggered")
+    console.log("logging in user . . .")
+
+    await signInWithEmailAndPassword(auth, formData.email, formData.password)
+    .then(() => {
+      router.push('/')
+    }).catch((error) => {
+      console.log(error.message)
+      alert(error.message)
+    })
   } else {
     alert("Error: Please double check that all the form fields are filled in and valid.")
+    disableLogin.value = false
   }
   
 }
