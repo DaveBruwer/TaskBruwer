@@ -13,7 +13,23 @@
         <button :disabled="disableLogin" type="submit">Log In</button>
         <router-link to="/register">Register</router-link>
       </div>
+      <button @click.prevent="() => {showModal = true}" class="m-2 self-end">Forgot Password</button>
     </form>
+    <base-modal :class="[showModal ? 'flex' : 'hidden']">
+      <form @submit.prevent="resetPassword" class="flex flex-grow flex-col justfiy-start">
+
+        <input v-model="resetV$.email.$model" type="email" name="email" placeholder="Email" class="text-black m-1 rounded">
+
+        <div class=" text-sm mb-1">
+          <div v-if="resetV$.email.$error" class=" text-red-500 font-bold">{{ resetV$.email.$errors[0].$message }}</div>
+        </div>
+        <div v-if="displayEmailMessage" class=" font-bold">{{ displayEmailMessage }}.</div>
+        <div class="flex justify-between m-1">
+          <button type="submit">Submit</button>
+          <button @click.prevent="() => {showModal = false}">Close</button>
+        </div>
+      </form>
+    </base-modal>
   </div>
   
 </template>
@@ -21,10 +37,11 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { useVuelidate } from '@vuelidate/core'
-import { required, email, minLength, maxLength, sameAs } from '@vuelidate/validators'
-import { signInWithEmailAndPassword } from '@firebase/auth';
+import { required, email } from '@vuelidate/validators'
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from '@firebase/auth';
 import { auth } from '../firebase';
 import router from '../router';
+import BaseModal from '../components/BaseModal.vue'
 
 const formData = reactive({
   email: '',
@@ -42,10 +59,10 @@ const v$ = useVuelidate(rules, formData)
 
 //#endregion Vuelidate
 
-
-// Function that is called whan form is submitted.
+//#region Login
 const disableLogin = ref(false)
 
+// Function that is called whan form is submitted.
 async function submitFn() {
   disableLogin.value = true
   const isFormValid = await v$.value.$validate()
@@ -61,11 +78,57 @@ async function submitFn() {
       alert(error.message)
     })
   } else {
-    alert("Error: Please double check that all the form fields are filled in and valid.")
+    console.log("Form fields not valid.")
     disableLogin.value = false
   }
-  
 }
+//#endregion Login
+
+//#region forgot password
+const showModal = ref(false)
+const disableForgotPassword = ref(false)
+const displayEmailMessage = ref("")
+
+const resetFormData = reactive({
+  email: ''
+})
+
+const resetFormRules = reactive({
+  email: {required, email}
+})
+
+const resetV$ = useVuelidate(resetFormRules, resetFormData)
+
+async function resetPassword() {
+  disableForgotPassword.value = true
+
+  const isResetFormValid = await resetV$.value.$validate()
+
+  if(isResetFormValid) {
+    console.log("sending password reset request...")
+    displayEmailMessage.value = `Please wait...`
+
+    await sendPasswordResetEmail(auth, resetFormData.email)
+    .then(() => {
+      displayEmailMessage.value = `A password reset email has been sent to ${resetFormData.email}`
+      disableForgotPassword.value = false
+    }).catch((error) => {
+      console.log(error.message)
+      alert(error.message)
+      disableForgotPassword.value = false
+      displayEmailMessage.value = ""
+      showModal.value = false
+    })   
+  } else {
+    console.log("Form fields not valid.")
+    disableForgotPassword.value = false
+  }
+
+
+}
+
+//#endregion forgot password
+
   
 </script>
 
