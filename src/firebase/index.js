@@ -2,9 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { useAuthStore } from "../store/authStore";
-
-
-
+import { config } from "../../config";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -12,13 +10,13 @@ import { useAuthStore } from "../store/authStore";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAVn48wnBDQeKeW2GVeO9efZMmEHMd42kE",
-  authDomain: "task-bruwer.firebaseapp.com",
-  projectId: "task-bruwer",
-  storageBucket: "task-bruwer.appspot.com",
-  messagingSenderId: "356333955183",
-  appId: "1:356333955183:web:ebb5a4b755a50ec2b1859a",
-  measurementId: "G-758YE57N3J"
+  apiKey: config.apiKey,
+  authDomain: config.authDomain,
+  projectId: config.projectId,
+  storageBucket: config.storageBucket,
+  messagingSenderId: config.messagingSenderId,
+  appId: config.appId,
+  measurementId: config.measurementId
 };
 
 // Initialize Firebase
