@@ -4,6 +4,8 @@ import Dashboard from '../views/DashboardView.vue'
 import Register from '../views/RegisterView.vue'
 import Login from '../views/LoginView.vue'
 import Account from '../views/AccountView.vue'
+import Task from '../views/TaskView.vue'
+
 const routes = [
   {
     path: '/',
@@ -29,6 +31,11 @@ const routes = [
     path: '/account',
     name: 'account',
     component: Account
+  },
+  {
+    path: '/tasks',
+    name: 'tasks',
+    component: Task
   }
 ]
 const router = createRouter({

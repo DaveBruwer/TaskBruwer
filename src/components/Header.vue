@@ -8,7 +8,7 @@
       <button id="hamburger-button" class="text-3xl md:hidden focust:outline-none mx-2" @click="() => {showMobileMenu = true}">&#9776</button>
       <nav class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="main">
         <router-link to="/dashboard" class="mx-2 hidden md:inline hover:opacity-75 ">Dasboard</router-link>
-        <a @click.prevent="logCurrentUser" class="mx-2 hidden md:inline hover:opacity-75 " href="#">Tasks</a>
+        <router-link to="/tasks" class="mx-2 hidden md:inline hover:opacity-75 ">Tasks</router-link>
         <a class="mx-2 hidden md:inline hover:opacity-75 " href="#">Projects</a>
       </nav>
       <nav v-if="authStore.currentUser" class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="login register">
@@ -25,7 +25,7 @@
       <nav class="flex flex-col min-h-screen items-center py-8" aria-label="mobile">
         <router-link to="/" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Home</router-link>
         <router-link to="/dashboard" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Dasboard</router-link>
-        <a @click.prevent="logCurrentUser" class="width-full text-center py-6 hover:opacity-75" href="#">Tasks</a>
+        <router-link to="/tasks" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Tasks</router-link>
         <a class="width-full text-center py-6 hover:opacity-75" href="#">Projects</a>
         <div v-if="authStore.currentUser" class="flex flex-col">
           <router-link to="/account" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">{{ authStore.currentUser.displayName }}</router-link>
@@ -82,6 +82,9 @@ async function logOut() {
 
 function logCurrentUser() {
   console.log(authStore.currentUser)
+  const jsonUser = JSON.stringify(authStore.currentUser)
+  console.log(jsonUser)
+  console.log(JSON.parse(jsonUser))
 }
 
 </script>
