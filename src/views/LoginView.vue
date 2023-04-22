@@ -40,7 +40,7 @@ import { useVuelidate } from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
 import { sendPasswordResetEmail, signInWithEmailAndPassword } from '@firebase/auth';
 import { auth } from '../firebase';
-import router from '../router';
+// import router from '../router';
 import BaseModal from '../components/BaseModal.vue'
 
 const formData = reactive({
@@ -72,7 +72,7 @@ async function submitFn() {
 
     await signInWithEmailAndPassword(auth, formData.email, formData.password)
     .then(() => {
-      router.push('/')
+      this.$router.push('/')
     }).catch((error) => {
       console.log(error.message)
       alert(error.message)

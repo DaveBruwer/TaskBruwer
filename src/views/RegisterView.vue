@@ -46,7 +46,7 @@ import { required, email, minLength, maxLength, sameAs } from '@vuelidate/valida
 import { createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { auth, db } from '../firebase'
 import { doc, setDoc } from '@firebase/firestore';
-import router from '../router';
+// import router from '../router';
 
 const disableSubmit = ref(false)
 
@@ -94,7 +94,7 @@ async function submitFn() {
         lastName: formData.lastName
       })
     }).then( () => {
-      router.push('/')
+      this.$router.push('/')
     }).catch((error) => {
       console.log(error.message)
       alert(error.message)
