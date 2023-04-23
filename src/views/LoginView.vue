@@ -40,8 +40,10 @@ import { useVuelidate } from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
 import { sendPasswordResetEmail, signInWithEmailAndPassword } from '@firebase/auth';
 import { auth } from '../firebase';
-// import router from '../router';
+import { useRouter } from 'vue-router'
 import BaseModal from '../components/BaseModal.vue'
+
+const router = useRouter()
 
 const formData = reactive({
   email: '',
@@ -62,7 +64,7 @@ const v$ = useVuelidate(rules, formData)
 //#region Login
 const disableLogin = ref(false)
 
-// Function that is called whan form is submitted.
+// Function that is called when form is submitted.
 async function submitFn() {
   disableLogin.value = true
   const isFormValid = await v$.value.$validate()
@@ -72,7 +74,7 @@ async function submitFn() {
 
     await signInWithEmailAndPassword(auth, formData.email, formData.password)
     .then(() => {
-      this.$router.push('/')
+      router.push('/')
     }).catch((error) => {
       console.log(error.message)
       alert(error.message)

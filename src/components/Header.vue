@@ -45,7 +45,9 @@ import {ref} from 'vue'
 import { useAuthStore } from '../store/authStore';
 import { signOut } from '@firebase/auth';
 import { auth } from '../firebase';
-import router from '../router';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const authStore = useAuthStore()
 
