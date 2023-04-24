@@ -7,9 +7,16 @@
   </div>
   <h1 class="text-2xl">Projects:</h1>
   <ul>
-    <li class=" ml-4 my-2" v-for="project in taskStore.projects" >
-      <div class="text-xl">{{ project.name }}</div>
-      <div>{{ project.description }}</div>
+    <li class="flex flex-row ml-4 my-2" v-for="project in taskStore.projects" >
+      <div class="mr-1 w-5" :style="{ 'background-color': project.colour}">
+      </div>
+      <div>
+        <div class="flex flex-row items-end">
+          <div class="text-xl">{{ project.name }}</div>
+          <div class=" ml-5 text-md">Priority: {{ project.priority }}</div>
+        </div>
+        <div>{{ project.description }}</div>
+      </div>
     </li>
   </ul>
   <base-modal :class="[showModal ? 'flex' : 'hidden']">
