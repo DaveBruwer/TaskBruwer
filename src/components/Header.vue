@@ -9,7 +9,7 @@
       <nav class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="main">
         <router-link to="/dashboard" class="mx-2 hidden md:inline hover:opacity-75 ">Dasboard</router-link>
         <router-link to="/tasks" class="mx-2 hidden md:inline hover:opacity-75 ">Tasks</router-link>
-        <a class="mx-2 hidden md:inline hover:opacity-75 " href="#">Projects</a>
+        <router-link to="/projects" class="mx-2 hidden md:inline hover:opacity-75 ">Projects</router-link>
       </nav>
       <nav v-if="authStore.currentUser" class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="login register">
         <router-link to="/account" class="mx-2 hidden md:inline hover:opacity-75 ">{{ authStore.currentUser.displayName }}</router-link>
@@ -26,7 +26,7 @@
         <router-link to="/" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Home</router-link>
         <router-link to="/dashboard" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Dasboard</router-link>
         <router-link to="/tasks" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Tasks</router-link>
-        <a class="width-full text-center py-6 hover:opacity-75" href="#">Projects</a>
+        <router-link to="/projects" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">Projects</router-link>
         <div v-if="authStore.currentUser" class="flex flex-col">
           <router-link to="/account" class="width-full text-center py-6 hover:opacity-75" @click="() => {showMobileMenu = false}">{{ authStore.currentUser.displayName }}</router-link>
           <a @click.prevent="logOut" class="width-full text-center py-6 hover:opacity-75" href="#">Log Out</a>

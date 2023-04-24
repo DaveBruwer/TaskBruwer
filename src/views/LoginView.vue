@@ -15,11 +15,9 @@
       </div>
       <button @click.prevent="() => {showModal = true}" class="m-2 self-end">Forgot Password</button>
     </form>
-    <base-modal :class="[showModal ? 'flex' : 'hidden']">
+    <base-modal class="flex-grow" :class="[showModal ? 'flex' : 'hidden']">
       <form @submit.prevent="resetPassword" class="flex flex-grow flex-col justfiy-start">
-
         <input v-model="resetV$.email.$model" type="email" name="email" placeholder="Email" class="text-black m-1 rounded">
-
         <div class=" text-sm mb-1">
           <div v-if="resetV$.email.$error" class=" text-red-500 font-bold">{{ resetV$.email.$errors[0].$message }}</div>
         </div>
