@@ -7,35 +7,40 @@
   </div>
   <h1 class="text-2xl">Projects:</h1>
   <ul>
-    <li v-for="project in taskStore.projects" >
+    <li class=" ml-4 my-2" v-for="project in taskStore.projects" >
       <div class="text-xl">{{ project.name }}</div>
       <div>{{ project.description }}</div>
     </li>
   </ul>
   <base-modal :class="[showModal ? 'flex' : 'hidden']">
   <form @submit.prevent="createProject" class="flex flex-grow flex-col justfiy-start">
-    <input type="text" class="text-black m-1 rounded" placeholder="Project Name">
-    <textarea class="text-black m-1 rounded" cols="30" rows="10" placeholder="Project Description"></textarea>
+    <input v-model="v$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Project Name">
+    <div class=" text-sm mb-1">
+      <div v-if="v$.name.$error" class=" text-red-500 font-bold">{{ v$.name.$errors[0].$message }}</div>
+    </div>
+    <div v-if="displayEmailMessage" class=" font-bold">{{ displayEmailMessage }}.</div>
+    <textarea v-model="v$.description.$model" class="text-black m-1 rounded" cols="30" rows="10" placeholder="Project Description"></textarea>
     <div class="flex flex-row justify-between">
       <div >
         <label for="Colour">Colour: </label>
         <datalist id="colours" class=" rounded w-20" :class="projectData.colour" >
-          <option class=" bg-red-700" value="#b91c1c"></option>
-          <option class=" bg-orange-700" value="#c2410c"></option>
-          <option class=" bg-yellow-700" value="#a16207"></option>
-          <option class=" bg-green-700" value="#15803d"></option>
+          <option class=" bg-red-600" value="#dc2626"></option>
+          <option class=" bg-orange-600" value="#ea580c"></option>
+          <option class=" bg-yellow-500" value="#f59e0b"></option>
+          <option class=" bg-green-600" value="#16a34a"></option>
           <option class=" bg-blue-700" value="#1d4ed8"></option>
           <option class=" bg-purple-700" value="#7e22ce"></option>
-          <option class=" bg-pink-700" value="#be185d"></option>
+          <option class=" bg-pink-600" value="#e11d48"></option>
+          <option class=" bg-gray-500" value="#6b7280"></option>
         </datalist>
         <input class="bg-transparent" v-model="v$.colour.$model" list="colours" type="color">
       </div>
       <div>
         <label for="priority">Priority: </label>
         <select id="priority" class="rounded bg-transparent" v-model="v$.priority.$model" >
-          <option class="text-black" value="Low">Low</option>
-          <option class="text-black" value="Medium">Medium</option>
           <option class="text-black" value="High">High</option>
+          <option class="text-black" value="Medium">Medium</option>
+          <option class="text-black" value="Low">Low</option>
         </select>
       </div>
     </div>
@@ -53,7 +58,7 @@ import { useTaskStore } from '../store/taskStore'
 import { useAuthStore } from '../store/authStore'
 import BaseModal from '../components/BaseModal.vue'
 import useVuelidate from '@vuelidate/core';
-import { required, maxLength } from '@vuelidate/validators';
+import { required, maxLength, helpers } from '@vuelidate/validators';
 
 // initiating the stores
 const authStore = useAuthStore()
@@ -67,12 +72,15 @@ const disableSubmit = ref(false) // for disabling the submit button while proces
 const projectData = reactive({
   name: "",
   description: "",
-  priority: "Med",
-  colour: "#b91c1c"
+  priority: "Medium",
+  colour: "#dc2626"
 })
 
+// Custom validator function to check if project name already exists.
+const uniqueName = (value) => !taskStore.projects[value]
+
 const rules = {
-  name: {required, maxLength: maxLength(25)},
+  name: {required, maxLength: maxLength(25), uniqueName: helpers.withMessage('This project name already exists.', uniqueName)},
   description: {},
   priority: {required},
   colour: {required}
@@ -81,9 +89,26 @@ const rules = {
 const v$ = useVuelidate(rules, projectData)
 
 
-function createProject() {
+const displayEmailMessage = ref("")
+
+async function createProject() {
   disableSubmit.value = true
   console.log("creating project")
+
+  const isFormValid = await v$.value.$validate()
+
+  if(isFormValid) {
+    displayEmailMessage.value = "Processing..."
+
+    taskStore.projects[projectData.name] = {
+      name: projectData.name,
+      description: projectData.description,
+      priority: projectData.priority,
+      colour: projectData.colour
+    }
+  }
+
+  displayEmailMessage.value = ""
   showModal.value = false
   disableSubmit.value = false
 }
