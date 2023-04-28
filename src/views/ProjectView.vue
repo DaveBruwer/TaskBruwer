@@ -7,13 +7,14 @@
   </div>
   <h1 class="text-2xl">Projects:</h1>
   <ul>
-    <li class="flex flex-row ml-4 my-2" v-for="project in taskStore.projects" >
+    <li class="flex flex-row ml-4 my-2" v-for="(project, key) in taskStore.projects" >
       <div class="mr-1 w-5" :style="{ 'background-color': project.colour}">
       </div>
       <div>
-        <div class="flex flex-row items-end">
+        <div class="flex flex-row items-end justify-start">
           <div class="text-xl">{{ project.name }}</div>
-          <div class=" ml-5 text-md">Priority: {{ project.priority }}</div>
+          <div class=" mx-5 text-md">Priority: {{ project.priority }}</div>
+          <button @click.prevent="() => { projectToDel = key }" class=" text-red-700 font-bold">Delete</button>
         </div>
         <div>{{ project.description }}</div>
       </div>
@@ -25,7 +26,7 @@
     <div class=" text-sm mb-1">
       <div v-if="v$.name.$error" class=" text-red-500 font-bold">{{ v$.name.$errors[0].$message }}</div>
     </div>
-    <div v-if="displayEmailMessage" class=" font-bold">{{ displayEmailMessage }}.</div>
+    <div v-if="processingMessage" class=" font-bold">{{ processingMessage }}.</div>
     <textarea v-model="v$.description.$model" class="text-black m-1 rounded" cols="30" rows="10" placeholder="Project Description"></textarea>
     <div class="flex flex-row justify-between">
       <div >
@@ -57,10 +58,19 @@
     </div>
   </form>
   </base-modal>
+  <base-modal :class="[showDelModal ? 'flex' : 'hidden']">
+  <form v-if="projectToDel" >
+    <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete {{ taskStore.projects[projectToDel].name }}?</h1>
+    <div class="flex justify-between m-1 ">
+      <button @click.prevent="deleteProject" class=" text-red-700 hover:text-white hover:bg-red-700 rounded p-1">Delete</button>
+      <button @click.prevent="() => {projectToDel = ''}">Cancel</button>
+    </div>
+  </form>
+  </base-modal>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import { useTaskStore } from '../store/taskStore'
 import { useAuthStore } from '../store/authStore'
 import BaseModal from '../components/BaseModal.vue'
@@ -71,7 +81,7 @@ import { required, maxLength, helpers } from '@vuelidate/validators';
 const authStore = useAuthStore()
 const taskStore = useTaskStore()
 
-//#region Modal logic
+//#region New Project
 
 const showModal = ref(false) // for toggling modal visibility
 const disableSubmit = ref(false) // for disabling the submit button while processing
@@ -84,7 +94,7 @@ const projectData = reactive({
 })
 
 // Custom validator function to check if project name already exists.
-const uniqueName = (value) => !taskStore.projects[value]
+const uniqueName = (value) => !Object.values(taskStore.projects).find((project) => project.name == value)
 
 const rules = {
   name: {required, maxLength: maxLength(25), uniqueName: helpers.withMessage('This project name already exists.', uniqueName)},
@@ -95,35 +105,57 @@ const rules = {
 
 const v$ = useVuelidate(rules, projectData)
 
-
-const displayEmailMessage = ref("")
+const processingMessage = ref("")
 
 async function createProject() {
   disableSubmit.value = true
-  console.log("creating project")
-
+  
   const isFormValid = await v$.value.$validate()
-
+  
   if(isFormValid) {
-    displayEmailMessage.value = "Processing..."
+    console.log("creating project")
+    processingMessage.value = "Processing..."
 
-    taskStore.projects[projectData.name] = {
+    taskStore.projects[Date.now()] = {
       name: projectData.name,
       description: projectData.description,
       priority: projectData.priority,
       colour: projectData.colour
     }
+
+    projectData.name = ""
+    projectData.description = ""
+    projectData.priority = "Medium"
+    projectData.colour = "#dc2626"
+
+    processingMessage.value = ""
+    showModal.value = false
   }
 
-  displayEmailMessage.value = ""
-  showModal.value = false
   disableSubmit.value = false
 }
 
 
-//#endregion Modal logic
+//#endregion New Project
+
+//#region Delete Project
+
+const projectToDel = ref("")
+
+const showDelModal = computed(() => Boolean(projectToDel.value))
+
+const deleteProject = function() {
+
+  delete taskStore.projects[projectToDel.value]
+
+  console.log(`Project deleted!`)
+
+  projectToDel.value = ""
+
+}
 
 
+//#endregion Delete Project
 
 
   

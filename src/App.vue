@@ -32,14 +32,13 @@ taskStore.$subscribe(() => {
 })
 
 function doCountdown() {
-  console.log("starting countdown...")
+  console.log("Checking for further changes...")
   const setInt = setInterval(() => {
     if(countdown.value < 1) {
       clearInterval(setInt)
       countdownStarted.value = false
       syncData()
     } else {
-      console.log(countdown.value)
       countdown.value--
     }
   }, 1000);
@@ -50,7 +49,7 @@ async function syncData() {
   await updateDoc(doc(db, "users", authStore.currentUser.uid), {
     data: JSON.stringify(taskStore.$state)
   }).then(() => {
-    console.log("sync complete")
+    console.log("Sync complete")
   }).catch((error) => {
     console.log(error.message)
     alert(error.message)
