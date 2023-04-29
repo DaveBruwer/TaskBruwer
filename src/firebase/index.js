@@ -34,7 +34,7 @@ onAuthStateChanged(auth, (user) => {
   const authStore = useAuthStore()
   const taskStore = useTaskStore()
   if(user) {
-    console.log('user')
+    console.log(`User: ${user.displayName}`)
     authStore.currentUser = user
     loadData(user.uid, taskStore.$state, authStore.dataInit)
   } else {

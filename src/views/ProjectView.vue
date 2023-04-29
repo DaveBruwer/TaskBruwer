@@ -2,7 +2,7 @@
   <div class="flex justify-center flex-col">
     <h1 class=" text-3xl">Project Page</h1>
     <div>
-      <button @click.prevent="() => { showModal = true}" :disabled="!authStore.currentUser">New Project</button>
+      <button @click.prevent="() => { showNewModal = true}" :disabled="!authStore.currentUser">New Project</button>
     </div>
   </div>
   <h1 class="text-2xl">Projects:</h1>
@@ -14,13 +14,14 @@
         <div class="flex flex-row items-end justify-start">
           <div class="text-xl">{{ project.name }}</div>
           <div class=" mx-5 text-md">Priority: {{ project.priority }}</div>
-          <button @click.prevent="() => { projectToDel = key }" class=" text-red-700 font-bold">Delete</button>
+          <button class="mx-2" @click.prevent="launchUpdateModal(key)">Edit</button>
+          <button @click.prevent="() => { projectToDel = key }" class=" text-red-700 font-bold mx-s">Delete</button>
         </div>
         <div>{{ project.description }}</div>
       </div>
     </li>
   </ul>
-  <base-modal :class="[showModal ? 'flex' : 'hidden']">
+  <base-modal id="newProjectModal" :class="[showNewModal ? 'flex' : 'hidden']">
   <form @submit.prevent="createProject" class="flex flex-grow flex-col justfiy-start">
     <input v-model="v$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Project Name">
     <div class=" text-sm mb-1">
@@ -54,16 +55,54 @@
     </div>
     <div class="flex justify-between m-1 ">
       <button type="submit">Submit</button>
-      <button @click.prevent="() => {showModal = false}">Cancel</button>
+      <button @click.prevent="() => {showNewModal = false}">Cancel</button>
     </div>
   </form>
   </base-modal>
-  <base-modal :class="[showDelModal ? 'flex' : 'hidden']">
+  <base-modal id="deleteProjectModal" :class="[showDelModal ? 'flex' : 'hidden']">
   <form v-if="projectToDel" >
     <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete {{ taskStore.projects[projectToDel].name }}?</h1>
     <div class="flex justify-between m-1 ">
       <button @click.prevent="deleteProject" class=" text-red-700 hover:text-white hover:bg-red-700 rounded p-1">Delete</button>
       <button @click.prevent="() => {projectToDel = ''}">Cancel</button>
+    </div>
+  </form>
+  </base-modal>
+  <base-modal id="updateProjectModal" :class="[showUpdateModal ? 'flex' : 'hidden']">
+  <form v-if="showUpdateModal" @submit.prevent="updateProject" class="flex flex-grow flex-col justfiy-start">
+    <input v-model="editv$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Project Name">
+    <div class=" text-sm mb-1">
+      <div v-if="editv$.name.$error" class=" text-red-500 font-bold">{{ editv$.name.$errors[0].$message }}</div>
+    </div>
+    <div v-if="processingMessage" class=" font-bold">{{ processingMessage }}.</div>
+    <textarea v-model="editv$.description.$model" class="text-black m-1 rounded" cols="30" rows="10" placeholder="Project Description"></textarea>
+    <div class="flex flex-row justify-between">
+      <div >
+        <label for="Colour">Colour: </label>
+        <datalist id="colours" class=" rounded w-20" :class="projectData.colour" >
+          <option class=" bg-red-600" value="#dc2626"></option>
+          <option class=" bg-orange-600" value="#ea580c"></option>
+          <option class=" bg-yellow-500" value="#f59e0b"></option>
+          <option class=" bg-green-600" value="#16a34a"></option>
+          <option class=" bg-blue-700" value="#1d4ed8"></option>
+          <option class=" bg-purple-700" value="#7e22ce"></option>
+          <option class=" bg-pink-600" value="#e11d48"></option>
+          <option class=" bg-gray-500" value="#6b7280"></option>
+        </datalist>
+        <input class="bg-transparent" v-model="editv$.colour.$model" list="colours" type="color">
+      </div>
+      <div>
+        <label for="priority">Priority: </label>
+        <select id="priority" class="rounded bg-transparent" v-model="editv$.priority.$model" >
+          <option class="text-black" value="High">High</option>
+          <option class="text-black" value="Medium">Medium</option>
+          <option class="text-black" value="Low">Low</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex justify-between m-1 ">
+      <button type="submit">Update</button>
+      <button @click.prevent="clearUpdateModal">Cancel</button>
     </div>
   </form>
   </base-modal>
@@ -81,17 +120,18 @@ import { required, maxLength, helpers } from '@vuelidate/validators';
 const authStore = useAuthStore()
 const taskStore = useTaskStore()
 
-//#region New Project
-
-const showModal = ref(false) // for toggling modal visibility
-const disableSubmit = ref(false) // for disabling the submit button while processing
-
+// main form data for creating and updating projects.
 const projectData = reactive({
   name: "",
   description: "",
   priority: "Medium",
   colour: "#dc2626"
 })
+
+//#region New Project
+
+const showNewModal = ref(false) // for toggling modal visibility
+const disableSubmit = ref(false) // for disabling the submit button while processing
 
 // Custom validator function to check if project name already exists.
 const uniqueName = (value) => !Object.values(taskStore.projects).find((project) => project.name == value)
@@ -129,14 +169,79 @@ async function createProject() {
     projectData.colour = "#dc2626"
 
     processingMessage.value = ""
-    showModal.value = false
+    showNewModal.value = false
   }
 
   disableSubmit.value = false
 }
 
-
 //#endregion New Project
+
+//#region Update Project
+
+const showUpdateModal = ref(false)
+
+let updateKey = ""
+
+let projectNames = []
+
+const uniqueNameEdit = (value) => !projectNames.find((name) => name == value)
+
+const editRules = {
+  name: {required, maxLength: maxLength(25), uniqueNameEdit: helpers.withMessage('This project name already exists.', uniqueNameEdit)},
+  description: {},
+  priority: {required},
+  colour: {required}
+}
+
+const editv$ = useVuelidate(editRules, projectData)
+
+function launchUpdateModal(key) {
+
+  updateKey = key
+
+  for (const projectKey in taskStore.projects) {
+    if (projectKey != updateKey) {
+      projectNames.push(taskStore.projects[projectKey].name)
+    }
+  }
+
+  projectData.name = taskStore.projects[updateKey].name
+  projectData.description = taskStore.projects[updateKey].description
+  projectData.priority = taskStore.projects[updateKey].priority
+  projectData.colour = taskStore.projects[updateKey].colour
+
+  showUpdateModal.value = true
+}
+
+function updateProject() {
+
+  taskStore.projects[updateKey] = {
+    name: projectData.name,
+    description: projectData.description,
+    priority: projectData.priority,
+    colour: projectData.colour
+  }
+
+  clearUpdateModal()
+  
+}
+
+function clearUpdateModal() {
+  
+  projectData.name = ""
+  projectData.description = ""
+  projectData.priority = "Medium"
+  projectData.colour = "#dc2626"
+  
+  updateKey = ""
+  
+  projectNames = []
+  
+  showUpdateModal.value = false
+}
+
+//#endregion Update Project
 
 //#region Delete Project
 
@@ -156,8 +261,6 @@ const deleteProject = function() {
 
 
 //#endregion Delete Project
-
-
   
 </script>
 
