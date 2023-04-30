@@ -1,9 +1,9 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp } from "firebase/app"
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc, getFirestore } from 'firebase/firestore'
-import { useAuthStore } from "../store/authStore";
-import { useTaskStore } from "../store/taskStore";
-import { config } from "../../config";
+import { useAuthStore } from "../store/authStore"
+import { useTaskStore } from "../store/taskStore"
+import { config } from "../../config"
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -18,7 +18,7 @@ const firebaseConfig = {
   messagingSenderId: config.messagingSenderId,
   appId: config.appId,
   measurementId: config.measurementId
-};
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
@@ -27,7 +27,7 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
 // Initialize Cloud Firestore and get a reference to the service
-const db = getFirestore(app);
+const db = getFirestore(app)
 
 onAuthStateChanged(auth, (user) => {
   console.log('onAuthStateChanged')
@@ -54,13 +54,13 @@ async function loadData(userID) {
   const authStore = useAuthStore()
   const taskStore = useTaskStore()
   await getDoc(doc(db, "users", userID))
-  .then((doc_Snapp) => {
-    taskStore.$state = JSON.parse(doc_Snapp.data().data)
-    authStore.dataInit = true
-  }).catch((error) => {
-    console.log(error.message)
-    alert(error.message)
-  })
+    .then((doc_Snapp) => {
+      taskStore.$state = JSON.parse(doc_Snapp.data().data)
+      authStore.dataInit = true
+    }).catch((error) => {
+      console.log(error.message)
+      alert(error.message)
+    })
 }
 
 export {

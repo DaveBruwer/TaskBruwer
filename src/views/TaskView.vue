@@ -2,40 +2,115 @@
   <div class="flex justify-center flex-col">
     <h1 class=" text-3xl">Task Page</h1>
     <div>
-      <button @click.prevent="saveBtn" :disabled="!authStore.currentUser">Save Tasks</button>
+      <button @click.prevent="() => showNewModal = true" :disabled="!authStore.currentUser">New Task</button>
     </div>
   </div>
   <h1 class="text-2xl">Tasks:</h1>
   <ul>
-    <li v-for="task in taskStore.tasks" >{{ task.name }}</li>
+    <li v-for="task in taskStore.tasks" :key="task.name" >{{ task.name }}</li>
   </ul>
+  <base-modal id="newTaskModal" :class="[showNewModal ? 'flex' : 'hidden']">
+  <form @submit.prevent="createTask" class="flex flex-grow flex-col justfiy-start">
+    <input v-model="newv$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Task Name">
+    <div class=" text-sm mb-1">
+      <div v-if="newv$.name.$error" class=" text-red-500 font-bold">{{ newv$.name.$errors[0].$message }}</div>
+    </div>
+    <textarea v-model="newv$.description.$model" class="text-black m-1 rounded" cols="30" rows="5" placeholder="Task Description"></textarea>
+    <div class="flex flex-row justify-between">
+      <div >
+        <label for="Project">Project: </label>
+        <select v-model="newv$.project.$model" class="rounded bg-transparent border" id="Project">
+          <option class=" text-black" v-for="(project, key) in taskStore.projects" :value="key" :key="key">{{ project.name }}</option>
+        </select>
+        <div class=" text-sm mb-1">
+          <div v-if="newv$.project.$error" class=" text-red-500 font-bold">{{ newv$.project.$errors[0].$message }}</div>
+        </div>
+      </div>
+      <div>
+        <label for="priority">Priority: </label>
+        <select id="priority" class="rounded bg-transparent border" v-model="newv$.priority.$model" >
+          <option class="text-black" value="High">High</option>
+          <option class="text-black" value="Medium">Medium</option>
+          <option class="text-black" value="Low">Low</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label for="date">Due Date:</label>
+      <input type="date" id="date" class="bg-transparent" v-model="newv$.dueDate.$model">
+    </div>
+    <div class="flex justify-between m-1 ">
+      <button type="submit">Submit</button>
+      <button @click.prevent="() => {showNewModal = false}">Cancel</button>
+    </div>
+  </form>
+  </base-modal>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue'
 import { useTaskStore } from '../store/taskStore'
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../store/authStore'
+import BaseModal from '../components/BaseModal.vue'
+import useVuelidate from '@vuelidate/core'
+import { required, maxLength } from '@vuelidate/validators'
 
 const authStore = useAuthStore()
 
 const taskStore = useTaskStore()
 
-const counter = ref(1)
+// main form data for creating and updating tasks
+const taskData = reactive({
+  name: "",
+  description: "",
+  project: "",
+  priority: "Medium",
+  dueDate: ""
+})
 
-function saveBtn() {
-  console.log(counter.value)
+//#region newTaskModal
 
-  taskStore.tasks[`Task${counter.value}`] = {
-    description: `Task ${counter.value} description`,
-    name: `Task ${counter.value} name`
-  }
+const showNewModal = ref(false)
 
-  counter.value++
-
+const newRules = {
+  name: {required, maxLength: maxLength(25)},
+  description: {},
+  project: {required},
+  priority: {required},
+  dueDate: {}
 }
 
+const newv$ = useVuelidate(newRules, taskData)
 
-  
+async function createTask() {
+
+  const isFormValid = await newv$.value.$validate()
+
+  if(isFormValid) {
+    console.log('Creating task')
+    
+    taskStore.tasks[Date.now()] = {
+      name: taskData.name,
+      description: taskData.description,
+      project: taskData.project,
+      priority: taskData.priority,
+      dueDate: taskData.dueDate
+    }//taskStore.tasks[Date.now()]
+
+    console.log('Task Created')
+    console.log(taskData)
+
+    taskData.name = ""
+    taskData.description = ""
+    taskData.project = ""
+    taskData.priority = "Medium"
+    taskData.dueDate = ""
+
+    showNewModal.value = false
+
+  } //if(isFormValid)
+}
+
 </script>
 
 <style>

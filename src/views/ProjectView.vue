@@ -3,11 +3,12 @@
     <h1 class=" text-3xl">Project Page</h1>
     <div>
       <button @click.prevent="() => { showNewModal = true}" :disabled="!authStore.currentUser">New Project</button>
+      <button @click.prevent="logListOfProjects">Log list of projects</button>
     </div>
   </div>
   <h1 class="text-2xl">Projects:</h1>
   <ul>
-    <li class="flex flex-row ml-4 my-2" v-for="(project, key) in taskStore.projects" >
+    <li class="flex flex-row ml-4 my-2" v-for="(project, key) in taskStore.projects" :key="key" >
       <div class="mr-1 w-5" :style="{ 'background-color': project.colour}">
       </div>
       <div>
@@ -61,7 +62,7 @@
   </base-modal>
   <base-modal id="deleteProjectModal" :class="[showDelModal ? 'flex' : 'hidden']">
   <form v-if="projectToDel" >
-    <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete {{ taskStore.projects[projectToDel].name }}?</h1>
+    <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete <span class=" bg-red-300">{{ taskStore.projects[projectToDel].name }}</span>?</h1>
     <div class="flex justify-between m-1 ">
       <button @click.prevent="deleteProject" class=" text-red-700 hover:text-white hover:bg-red-700 rounded p-1">Delete</button>
       <button @click.prevent="() => {projectToDel = ''}">Cancel</button>
@@ -109,12 +110,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed } from 'vue'
 import { useTaskStore } from '../store/taskStore'
 import { useAuthStore } from '../store/authStore'
 import BaseModal from '../components/BaseModal.vue'
-import useVuelidate from '@vuelidate/core';
-import { required, maxLength, helpers } from '@vuelidate/validators';
+import useVuelidate from '@vuelidate/core'
+import { required, maxLength, helpers } from '@vuelidate/validators'
 
 // initiating the stores
 const authStore = useAuthStore()
@@ -134,7 +135,7 @@ const showNewModal = ref(false) // for toggling modal visibility
 const disableSubmit = ref(false) // for disabling the submit button while processing
 
 // Custom validator function to check if project name already exists.
-const uniqueName = (value) => !Object.values(taskStore.projects).find((project) => project.name == value)
+const uniqueName = (value) => !taskStore.listOfProjects.find((project) => project == value)
 
 const rules = {
   name: {required, maxLength: maxLength(25), uniqueName: helpers.withMessage('This project name already exists.', uniqueName)},
@@ -259,9 +260,12 @@ const deleteProject = function() {
 
 }
 
-
 //#endregion Delete Project
-  
+
+function logListOfProjects() {
+  console.log(taskStore.listOfProjects)
+}
+
 </script>
 
 <style>

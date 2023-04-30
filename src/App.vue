@@ -7,11 +7,11 @@
 </template>
 
 <script setup>
-import { doc, updateDoc } from "@firebase/firestore";
+import { doc, updateDoc } from "@firebase/firestore"
 import { ref } from "vue"
 import Header from "./components/Header.vue"
-import { db } from "./firebase";
-import { useAuthStore } from "./store/authStore";
+import { db } from "./firebase"
+import { useAuthStore } from "./store/authStore"
 import { useTaskStore } from "./store/taskStore"
 
 const authStore = useAuthStore()
@@ -22,7 +22,7 @@ const countdownStarted = ref(false)
 const taskStore = useTaskStore()
 taskStore.$subscribe(() => {
   if(authStore.currentUser && authStore.dataInit) {
-      countdown.value = 3
+    countdown.value = 3
 
     if(!countdownStarted.value){
       doCountdown()
@@ -41,7 +41,7 @@ function doCountdown() {
     } else {
       countdown.value--
     }
-  }, 1000);
+  }, 1000)
 }
 
 async function syncData() {
