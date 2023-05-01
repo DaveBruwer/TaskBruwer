@@ -6,8 +6,15 @@
     </div>
   </div>
   <h1 class="text-2xl">Tasks:</h1>
+  <div>
+    <div class="rounded border w-60 flex flex-row justify-between ml-4 my-2" v-for="(task, key) in taskStore.tasks" :key="key">
+      <div class=" bg-red-700 w-5"></div>
+      <div>{{task.name}}</div>
+      <button @click.prevent="() => { taskToDel = key }">Del</button>
+    </div>
+  </div>
   <ul>
-    <li v-for="task in taskStore.tasks" :key="task.name" >{{ task.name }}</li>
+    <li v-for="task in taskStore.tasks" :key="task.name" >{{ task }}</li>
   </ul>
   <base-modal id="newTaskModal" :class="[showNewModal ? 'flex' : 'hidden']">
   <form @submit.prevent="createTask" class="flex flex-grow flex-col justfiy-start">
@@ -45,10 +52,19 @@
     </div>
   </form>
   </base-modal>
+  <base-modal id="deleteTaskModal" :class="[showDelModal ? 'flex' : 'hidden']">
+  <form v-if="taskToDel" >
+    <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete <span class=" bg-red-300">{{ taskStore.tasks[taskToDel].name }}</span>?</h1>
+    <div class="flex justify-between m-1 ">
+      <button @click.prevent="deleteTask" class=" text-red-700 hover:text-white hover:bg-red-700 rounded p-1">Delete</button>
+      <button @click.prevent="() => {taskToDel = ''}">Cancel</button>
+    </div>
+  </form>
+  </base-modal>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useTaskStore } from '../store/taskStore'
 import { useAuthStore } from '../store/authStore'
 import BaseModal from '../components/BaseModal.vue'
@@ -110,6 +126,25 @@ async function createTask() {
 
   } //if(isFormValid)
 }
+//#endregion newTaskModal
+
+//#region deleteTask
+
+const taskToDel = ref("")
+
+const showDelModal = computed(() => Boolean(taskToDel.value))
+
+const deleteTask = function() {
+
+  delete taskStore.tasks[taskToDel.value]
+
+  console.log(`Task deleted!`)
+
+  taskToDel.value = ""
+
+}
+
+//#endregion deletTask
 
 </script>
 
