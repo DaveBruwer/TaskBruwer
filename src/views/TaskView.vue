@@ -7,15 +7,15 @@
   </div>
   <h1 class="text-2xl">Tasks:</h1>
   <div>
-    <div class="rounded border w-60 flex flex-row justify-between ml-4 my-2" v-for="(task, key) in taskStore.tasks" :key="key">
-      <div class=" bg-red-700 w-5"></div>
-      <div>{{task.name}}</div>
-      <button @click.prevent="() => { taskToDel = key }">Del</button>
+    <div class="rounded border flex flex-row justify-start ml-4 my-2 overflow-hidden h-16 w-60" v-for="(task, key) in taskStore.tasks" :key="key">
+      <div class="text-sm w-6 " :style="{ 'background-color': taskStore.projects[task.project].colour}"></div>
+      <div class="relative grow">
+        <div class="absolute top-0 left-0">{{task.name}}</div>
+        <div v-if="task.dueDate" class="absolute bottom-0 right-0 ">Due: {{task.dueDate}}</div>
+      </div>
+      <!-- <button @click.prevent="() => { taskToDel = key }">Del</button> -->
     </div>
   </div>
-  <ul>
-    <li v-for="task in taskStore.tasks" :key="task.name" >{{ task }}</li>
-  </ul>
   <base-modal id="newTaskModal" :class="[showNewModal ? 'flex' : 'hidden']">
   <form @submit.prevent="createTask" class="flex flex-grow flex-col justfiy-start">
     <input v-model="newv$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Task Name">
