@@ -22,7 +22,7 @@
       </div>
     </li>
   </ul>
-  <base-modal id="newProjectModal" :class="[showNewModal ? 'flex' : 'hidden']">
+  <base-modal id="newProjectModal" v-if="showNewModal">
   <form @submit.prevent="createProject" class="flex flex-grow flex-col justfiy-start">
     <input v-model="v$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Project Name">
     <div class=" text-sm mb-1">
@@ -60,7 +60,7 @@
     </div>
   </form>
   </base-modal>
-  <base-modal id="deleteProjectModal" :class="[showDelModal ? 'flex' : 'hidden']">
+  <base-modal id="deleteProjectModal" v-if="showDelModal">
   <form v-if="projectToDel" >
     <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete <span class=" bg-red-300">{{ taskStore.projects[projectToDel].name }}</span>?</h1>
     <div class="flex justify-between m-1 ">
@@ -69,7 +69,7 @@
     </div>
   </form>
   </base-modal>
-  <base-modal id="updateProjectModal" :class="[showUpdateModal ? 'flex' : 'hidden']">
+  <base-modal id="updateProjectModal" v-if="showUpdateModal">
   <form v-if="showUpdateModal" @submit.prevent="updateProject" class="flex flex-grow flex-col justfiy-start">
     <input v-model="editv$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Project Name">
     <div class=" text-sm mb-1">

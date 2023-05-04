@@ -10,49 +10,49 @@
     <div class="rounded border flex flex-row justify-start ml-4 my-2 overflow-hidden h-16 w-60" v-for="(task, key) in taskStore.tasks" :key="key">
       <div class="text-sm w-6 " :style="{ 'background-color': taskStore.projects[task.project].colour}"></div>
       <div class="relative grow">
-        <div class="absolute top-0 left-0">{{task.name}}</div>
-        <div v-if="task.dueDate" class="absolute bottom-0 right-0 ">Due: {{task.dueDate}}</div>
+        <div class="absolute top-0 left-0 mx-1">{{task.name}}</div>
+        <div v-if="task.dueDate" class="absolute bottom-0 right-0 mx-1 ">Due: {{task.dueDate}}</div>
       </div>
       <!-- <button @click.prevent="() => { taskToDel = key }">Del</button> -->
     </div>
   </div>
-  <base-modal id="newTaskModal" :class="[showNewModal ? 'flex' : 'hidden']">
-  <form @submit.prevent="createTask" class="flex flex-grow flex-col justfiy-start">
-    <input v-model="newv$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Task Name">
-    <div class=" text-sm mb-1">
-      <div v-if="newv$.name.$error" class=" text-red-500 font-bold">{{ newv$.name.$errors[0].$message }}</div>
-    </div>
-    <textarea v-model="newv$.description.$model" class="text-black m-1 rounded" cols="30" rows="5" placeholder="Task Description"></textarea>
-    <div class="flex flex-row justify-between">
-      <div >
-        <label for="Project">Project: </label>
-        <select v-model="newv$.project.$model" class="rounded bg-transparent border" id="Project">
-          <option class=" text-black" v-for="(project, key) in taskStore.projects" :value="key" :key="key">{{ project.name }}</option>
-        </select>
-        <div class=" text-sm mb-1">
-          <div v-if="newv$.project.$error" class=" text-red-500 font-bold">{{ newv$.project.$errors[0].$message }}</div>
+  <base-modal v-if="showNewModal" id="newTaskModal" :class="[showNewModal ? 'flex' : 'hidden']">
+    <form @submit.prevent="createTask" class="flex flex-grow flex-col justfiy-start">
+      <input v-model="newv$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Task Name">
+      <div class=" text-sm mb-1">
+        <div v-if="newv$.name.$error" class=" text-red-500 font-bold">{{ newv$.name.$errors[0].$message }}</div>
+      </div>
+      <textarea v-model="newv$.description.$model" class="text-black m-1 rounded" cols="30" rows="5" placeholder="Task Description"></textarea>
+      <div class="flex flex-row justify-between">
+        <div >
+          <label for="Project">Project: </label>
+          <select v-model="newv$.project.$model" class="rounded bg-transparent border" id="Project">
+            <option class=" text-black" v-for="(project, key) in taskStore.projects" :value="key" :key="key">{{ project.name }}</option>
+          </select>
+          <div class=" text-sm mb-1">
+            <div v-if="newv$.project.$error" class=" text-red-500 font-bold">{{ newv$.project.$errors[0].$message }}</div>
+          </div>
+        </div>
+        <div>
+          <label for="priority">Priority: </label>
+          <select id="priority" class="rounded bg-transparent border" v-model="newv$.priority.$model" >
+            <option class="text-black" value="High">High</option>
+            <option class="text-black" value="Medium">Medium</option>
+            <option class="text-black" value="Low">Low</option>
+          </select>
         </div>
       </div>
       <div>
-        <label for="priority">Priority: </label>
-        <select id="priority" class="rounded bg-transparent border" v-model="newv$.priority.$model" >
-          <option class="text-black" value="High">High</option>
-          <option class="text-black" value="Medium">Medium</option>
-          <option class="text-black" value="Low">Low</option>
-        </select>
+        <label for="date">Due Date:</label>
+        <input type="date" id="date" class="bg-transparent" v-model="newv$.dueDate.$model">
       </div>
-    </div>
-    <div>
-      <label for="date">Due Date:</label>
-      <input type="date" id="date" class="bg-transparent" v-model="newv$.dueDate.$model">
-    </div>
-    <div class="flex justify-between m-1 ">
-      <button type="submit">Submit</button>
-      <button @click.prevent="() => {showNewModal = false}">Cancel</button>
-    </div>
-  </form>
+      <div class="flex justify-between m-1 ">
+        <button type="submit">Submit</button>
+        <button @click.prevent="() => {showNewModal = false}">Cancel</button>
+      </div>
+    </form>
   </base-modal>
-  <base-modal id="deleteTaskModal" :class="[showDelModal ? 'flex' : 'hidden']">
+  <base-modal v-if="showDelModal" id="deleteTaskModal" :class="[showDelModal ? 'flex' : 'hidden']">
   <form v-if="taskToDel" >
     <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete <span class=" bg-red-300">{{ taskStore.tasks[taskToDel].name }}</span>?</h1>
     <div class="flex justify-between m-1 ">
@@ -61,6 +61,7 @@
     </div>
   </form>
   </base-modal>
+  <TaskComponent v-for="(task, key) in taskStore.tasks" :task-key="key" :key="key" />
 </template>
 
 <script setup>
@@ -70,6 +71,7 @@ import { useAuthStore } from '../store/authStore'
 import BaseModal from '../components/BaseModal.vue'
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength } from '@vuelidate/validators'
+import TaskComponent from '../components/TaskComponent.vue'
 
 const authStore = useAuthStore()
 
@@ -89,7 +91,7 @@ const taskData = reactive({
 const showNewModal = ref(false)
 
 const newRules = {
-  name: {required, maxLength: maxLength(25)},
+  name: {required, maxLength: maxLength(20)},
   description: {},
   project: {required},
   priority: {required},
