@@ -1,13 +1,13 @@
 <template>
-  <div @click.prevent="() => { showEditModal = true}" class="rounded hover:cursor-pointer border flex flex-row justify-start ml-4 my-2 overflow-hidden h-16 w-60">
-    <div class="text-sm w-6 " :style="{ 'background-color': taskStore.projects[task.project].colour}"></div>
+  <div @click.prevent="() => { editTaskModal.showModal() }" class="rounded hover:cursor-pointer border flex flex-row justify-start ml-4 my-2 overflow-hidden h-16 w-60">
+    <div class="text-sm w-6 " :style="{ 'background-color': taskStore.projects[taskStore.tasks[taskKey].project].colour}"></div>
     <div class="relative grow">
-      <div class="absolute top-0 left-0 mx-1">{{task.name}}</div>
-      <div v-if="task.dueDate" class="absolute bottom-0 right-0 mx-1 ">Due: {{task.dueDate}}</div>
+      <div class="absolute top-0 left-0 mx-1">{{taskStore.tasks[taskKey].name}}</div>
+      <div v-if="taskStore.tasks[taskKey].dueDate" class="absolute bottom-0 right-0 mx-1 ">Due: {{taskStore.tasks[taskKey].dueDate}}</div>
     </div>
     <!-- <button @click.prevent="() => { taskToDel = key }">Del</button> -->
   </div>
-  <base-modal v-if="showEditModal" id="editTaskModal">
+  <dialog ref="editTaskModal" class=" flex-grow max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300 self-start p-4 mt-32">
     <form @submit.prevent="updateTask" class="flex flex-grow flex-col justfiy-start">
       <input v-model="edit$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Task Name">
       <div class=" text-sm mb-1">
@@ -42,13 +42,12 @@
         <button @click.prevent="cancelEditModal">Cancel</button>
       </div>
     </form>
-  </base-modal>
+  </dialog>
 </template>
 
 <script setup>
 import { reactive, ref } from 'vue'
 import { useTaskStore } from '../store/taskStore'
-import BaseModal from './BaseModal.vue'
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength } from '@vuelidate/validators'
 
@@ -72,7 +71,7 @@ const task = reactive({
 
 //#region Edit Modal
 
-const showEditModal = ref(false)
+const editTaskModal = ref()
 
 const editRules = {
   name: {required, maxLength: maxLength(20)},
@@ -97,7 +96,7 @@ async function updateTask() {
     taskStore.tasks[props.taskKey].priority = task.priority
     taskStore.tasks[props.taskKey].dueDate = task.dueDate
 
-    showEditModal.value = false
+    editTaskModal.value.close()
   }
 }
 
@@ -108,7 +107,7 @@ function cancelEditModal() {
   task.priority = taskStore.tasks[props.taskKey].priority,
   task.dueDate = taskStore.tasks[props.taskKey].dueDate
 
-  showEditModal.value = false
+  editTaskModal.value.close()
 }
 
 //#endregion Edit Modal

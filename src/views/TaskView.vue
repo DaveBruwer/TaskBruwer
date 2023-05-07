@@ -7,14 +7,7 @@
   </div>
   <h1 class="text-2xl">Tasks:</h1>
   <div>
-    <div class="rounded border flex flex-row justify-start ml-4 my-2 overflow-hidden h-16 w-60" v-for="(task, key) in taskStore.tasks" :key="key">
-      <div class="text-sm w-6 " :style="{ 'background-color': taskStore.projects[task.project].colour}"></div>
-      <div class="relative grow">
-        <div class="absolute top-0 left-0 mx-1">{{task.name}}</div>
-        <div v-if="task.dueDate" class="absolute bottom-0 right-0 mx-1 ">Due: {{task.dueDate}}</div>
-      </div>
-      <!-- <button @click.prevent="() => { taskToDel = key }">Del</button> -->
-    </div>
+    <TaskComponent v-for="(task, key) in taskStore.tasks" :task-key="key" :key="key" />
   </div>
   <base-modal v-if="showNewModal" id="newTaskModal" :class="[showNewModal ? 'flex' : 'hidden']">
     <form @submit.prevent="createTask" class="flex flex-grow flex-col justfiy-start">
@@ -61,7 +54,6 @@
     </div>
   </form>
   </base-modal>
-  <TaskComponent v-for="(task, key) in taskStore.tasks" :task-key="key" :key="key" />
 </template>
 
 <script setup>
