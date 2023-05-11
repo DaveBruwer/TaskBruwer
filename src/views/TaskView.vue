@@ -2,14 +2,14 @@
   <div class="flex justify-center flex-col">
     <h1 class=" text-3xl">Task Page</h1>
     <div>
-      <button @click.prevent="() => showNewModal = true" :disabled="!authStore.currentUser">New Task</button>
+      <button @click.prevent="showNewModal.showModal()" :disabled="!authStore.currentUser">New Task</button>
     </div>
   </div>
   <h1 class="text-2xl">Tasks:</h1>
   <div>
     <TaskComponent v-for="(task, key) in taskStore.tasks" :task-key="key" :key="key" />
   </div>
-  <base-modal v-if="showNewModal" id="newTaskModal" :class="[showNewModal ? 'flex' : 'hidden']">
+  <dialog ref="showNewModal" id="newTaskModal" class="max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300 self-start p-4 mt-32">
     <form @submit.prevent="createTask" class="flex flex-grow flex-col justfiy-start">
       <input v-model="newv$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Task Name">
       <div class=" text-sm mb-1">
@@ -41,10 +41,10 @@
       </div>
       <div class="flex justify-between m-1 ">
         <button type="submit">Submit</button>
-        <button @click.prevent="() => {showNewModal = false}">Cancel</button>
+        <button @click.prevent="showNewModal.close()">Cancel</button>
       </div>
     </form>
-  </base-modal>
+  </dialog>
   <base-modal v-if="showDelModal" id="deleteTaskModal" :class="[showDelModal ? 'flex' : 'hidden']">
   <form v-if="taskToDel" >
     <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete <span class=" bg-red-300">{{ taskStore.tasks[taskToDel].name }}</span>?</h1>
@@ -80,7 +80,7 @@ const taskData = reactive({
 
 //#region newTaskModal
 
-const showNewModal = ref(false)
+const showNewModal = ref()
 
 const newRules = {
   name: {required, maxLength: maxLength(20)},
@@ -116,7 +116,7 @@ async function createTask() {
     taskData.priority = "Medium"
     taskData.dueDate = ""
 
-    showNewModal.value = false
+    showNewModal.value.close()
 
   } //if(isFormValid)
 }

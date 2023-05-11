@@ -7,7 +7,7 @@
     </div>
     <!-- <button @click.prevent="() => { taskToDel = key }">Del</button> -->
   </div>
-  <dialog ref="editTaskModal" class=" flex-grow max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300 self-start p-4 mt-32">
+  <dialog ref="editTaskModal" class="max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300 self-start p-4 mt-32">
     <form @submit.prevent="updateTask" class="flex flex-grow flex-col justfiy-start">
       <input v-model="edit$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Task Name">
       <div class=" text-sm mb-1">
