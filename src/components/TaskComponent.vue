@@ -1,5 +1,5 @@
 <template>
-  <div @click.prevent="() => { editTaskModal.showModal() }" class="rounded hover:cursor-pointer border flex flex-row justify-start ml-4 my-2 overflow-hidden h-16 w-60">
+  <div @click.prevent="() => { editTaskModal.showModal() }" draggable=true @dragstart="dragStart" @dragend="dragEnd" class=" cursor-grab rounded border flex-row justify-start ml-4 my-2 overflow-hidden h-16 w-60" :class="[dragging ? 'hidden' : 'flex']">
     <div class="text-sm w-6 " :style="{ 'background-color': taskStore.projects[taskStore.tasks[taskKey].project].colour}"></div>
     <div class="relative grow">
       <div class="absolute top-0 left-0 mx-1">{{taskStore.tasks[taskKey].name}}</div>
@@ -112,6 +112,26 @@ function cancelEditModal() {
 
 //#endregion Edit Modal
   
+//#region Drag
+
+let dragging = ref(false)
+
+function dragStart() {
+  console.log('drag start')
+  setTimeout(() => {
+    dragging.value = true
+  }, 10)
+}
+
+function dragEnd() {
+  console.log('drag end')
+  dragging.value = false
+}
+
+
+//#endregion Drag
+
+
 </script>
 
 <style>
