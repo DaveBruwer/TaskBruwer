@@ -5,7 +5,7 @@
         <img class=" my-1 md:m-0 h-6 md:h-10" src="../../coffee-cup_icon-icons.com_69402.ico" title="Task Bruwer" alt="Task Bruwer">
         <h1 class=" px-2 text-2xl md:text-3xl lg:text-5xl font-medium ">Task Bruwer</h1>
       </router-link>
-      <button id="hamburger-button" class="text-3xl md:hidden focust:outline-none mx-2" @click="() => {showMobileMenu = true}">&#9776</button>
+      <button id="hamburger-button" class="text-3xl md:hidden focust:outline-none mx-2" @click="() => {showMobileMenu = true}">&#9776;</button>
       <nav class="items-end hidden md:inline md:ms-8 text-md lg:text-lg" aria-label="main">
         <router-link to="/dashboard" class="mx-2 hidden md:inline hover:opacity-75 ">Dasboard</router-link>
         <router-link to="/tasks" class="mx-2 hidden md:inline hover:opacity-75 ">Tasks</router-link>
@@ -42,10 +42,10 @@
 
 <script setup>
 import {ref} from 'vue'
-import { useAuthStore } from '../store/authStore';
-import { signOut } from '@firebase/auth';
-import { auth } from '../firebase';
-import { useRouter } from 'vue-router';
+import { useAuthStore } from '../store/authStore'
+import { signOut } from '@firebase/auth'
+import { auth } from '../firebase'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -73,13 +73,13 @@ async function logOut() {
   disableLogout.value = true
   console.log('signing out . . .')
   await signOut(auth)
-  .then(() => {
-    router.push('/')
-  }).catch((error) => {
-    console.log(error.message)
-    alert(error.message)
-    disableLogout.value = false
-  })
+    .then(() => {
+      router.push('/')
+    }).catch((error) => {
+      console.log(error.message)
+      alert(error.message)
+      disableLogout.value = false
+    })
 }
 
 function logCurrentUser() {

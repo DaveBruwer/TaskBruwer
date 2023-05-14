@@ -116,8 +116,10 @@ function cancelEditModal() {
 
 let dragging = ref(false)
 
-function dragStart() {
+function dragStart(e) {
   console.log('drag start')
+  console.log(e)
+  e.dataTransfer.setData("text", props.taskKey)
   setTimeout(() => {
     dragging.value = true
   }, 10)

@@ -45,22 +45,22 @@
       </div>
     </form>
   </dialog>
-  <base-modal v-if="showDelModal" id="deleteTaskModal" :class="[showDelModal ? 'flex' : 'hidden']">
+  <div @drop="showDelModal" @dragover="(e) => { e.preventDefault()}" class=" absolute left-1/2 bottom-0 text-5xl m-2 p-10">&#128465;</div>
+  <dialog ref="delModal" class="max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300 self-start p-4 mt-32">
   <form v-if="taskToDel" >
     <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete <span class=" bg-red-300">{{ taskStore.tasks[taskToDel].name }}</span>?</h1>
     <div class="flex justify-between m-1 ">
       <button @click.prevent="deleteTask" class=" text-red-700 hover:text-white hover:bg-red-700 rounded p-1">Delete</button>
-      <button @click.prevent="() => {taskToDel = ''}">Cancel</button>
+      <button @click.prevent="() => {delModal.close()}">Cancel</button>
     </div>
   </form>
-  </base-modal>
+  </dialog>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive } from 'vue'
 import { useTaskStore } from '../store/taskStore'
 import { useAuthStore } from '../store/authStore'
-import BaseModal from '../components/BaseModal.vue'
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength } from '@vuelidate/validators'
 import TaskComponent from '../components/TaskComponent.vue'
@@ -124,15 +124,25 @@ async function createTask() {
 
 //#region deleteTask
 
-const taskToDel = ref("")
+const delModal = ref()
 
-const showDelModal = computed(() => Boolean(taskToDel.value))
+const taskToDel = ref()
+
+const showDelModal = function(e) {
+  taskToDel.value = e.dataTransfer.getData("text")
+
+  delModal.value.showModal()
+}
 
 const deleteTask = function() {
 
   delete taskStore.tasks[taskToDel.value]
 
   console.log(`Task deleted!`)
+
+  setTimeout(() => {
+    delModal.value.close()
+  }, 50)
 
   taskToDel.value = ""
 
