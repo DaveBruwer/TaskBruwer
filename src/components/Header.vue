@@ -1,5 +1,5 @@
 <template>
-  <header class="rounded bg-slate-400 dark:bg-slate-600 sticky top-0 z-10">
+  <header class="rounded bg-slate-400 dark:bg-slate-600 sticky left-3 top-0 z-10">
     <section class=" max-w-5xl mx-auto py-2 flex justify-between items-end">
       <router-link to="/" class=" flex justify-start items-end mx-2">
         <img class=" my-1 md:m-0 h-6 md:h-10" src="../../coffee-cup_icon-icons.com_69402.ico" title="Task Bruwer" alt="Task Bruwer">
@@ -82,12 +82,12 @@ async function logOut() {
     })
 }
 
-function logCurrentUser() {
-  console.log(authStore.currentUser)
-  const jsonUser = JSON.stringify(authStore.currentUser)
-  console.log(jsonUser)
-  console.log(JSON.parse(jsonUser))
-}
+// function logCurrentUser() {
+//   console.log(authStore.currentUser)
+//   const jsonUser = JSON.stringify(authStore.currentUser)
+//   console.log(jsonUser)
+//   console.log(JSON.parse(jsonUser))
+// }
 
 </script>
 

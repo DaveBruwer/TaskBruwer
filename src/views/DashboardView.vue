@@ -1,39 +1,37 @@
 <template>
-  <div class="flex justify-center">
-    <h1 class=" text-3xl">Dashboard Page</h1>
+  <div class="h-screen flex flex-nowrap justify-center">
+    <div class=" w-64 grow-0 shrink-0 border rounded m-2">
+      <div class=" border-b mx-1">In Progress</div>
+
+      </div>
+    <div class=" w-64 grow-0 shrink-0 border rounded m-2">
+      <div class="border-b mx-1">Do Now!</div>
+
+    </div>
+    <div class=" w-64 grow-0 shrink-0 border rounded m-2">
+      <div class="border-b mx-1">Got a Minute</div>
+
+    </div>
+    <div class=" w-64 grow-0 shrink-0 border rounded m-2">
+      <div class="border-b mx-1">Whenever</div>
+      
+    </div>
+
   </div>
-  <h1 class="text-2xl">Tasks:</h1>
-  <ul>
-    <li v-for="(task, key) in taskStore.tasks" :key="key" >{{ task.name }}</li>
-  </ul>
-  <h1 class="text-2xl">Projects:</h1>
-  <ul>
-    <li v-for="(project, key) in taskStore.projects" :key="key" >{{ project.name }}</li>
-  </ul>
-  <button @click.prevent="showModal">Open Dialogue</button>
-  <dialog ref="myModal">
-    <form >
-      <input type="text">
-      <button @click.prevent="closeModal">Close</button>
-    </form>
-  </dialog>
+  
+
+
+
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useTaskStore } from '../store/taskStore'
+import TaskComponent from '../components/TaskComponent.vue'
 
 const taskStore = useTaskStore()
 
-const myModal = ref()
 
-function showModal() {
-  myModal.value.showModal()
-}
-
-function closeModal() {
-  myModal.value.close()
-}
 
 </script>
 
