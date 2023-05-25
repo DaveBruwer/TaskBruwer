@@ -5,28 +5,28 @@
         <div>In Progress</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('In Progress')">+</button>
       </div>
-
+      <TaskComponent v-for="key in InProgressTasks" :task-key="key" :key="key" />
       </div>
     <div class=" w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
         <div>Do Now!</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Do Now!')">+</button>
       </div>
-
+      <TaskComponent v-for="key in DoNowTasks" :task-key="key" :key="key" />
     </div>
     <div class=" w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
         <div>Got a Minute?</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Got a Minute?')">+</button>
       </div>
-
+      <TaskComponent v-for="key in GotAMinuteTasks" :task-key="key" :key="key" />
     </div>
     <div class=" w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
         <div>Whenever</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Whenever')">+</button>
       </div>
-
+      <TaskComponent v-for="key in WheneverTasks" :task-key="key" :key="key" />
     </div>
 
   </div>
@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useTaskStore } from '../store/taskStore'
 import TaskComponent from '../components/TaskComponent.vue'
 import useVuelidate from '@vuelidate/core'
@@ -109,7 +109,11 @@ const newv$ = useVuelidate(newRules, taskData)
 
 async function createTask() {
 
+  console.log('submit button pressed')
+
   const isFormValid = await newv$.value.$validate()
+
+  console.log(isFormValid)
 
   if(isFormValid) {
     console.log('Creating task')
@@ -135,13 +139,34 @@ async function createTask() {
 
   } //if(isFormValid)
 }
-//#endregion newTaskModal
 
 function launchNewTaskModal(newTaskStatus) {
   taskData.status = newTaskStatus
 
   showNewModal.value.showModal()  
 }
+
+//#endregion newTaskModal
+
+const InProgressTasks = computed(() => {
+  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')
+})
+
+const DoNowTasks = computed(() => {
+  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Do Now!')
+})
+
+const GotAMinuteTasks = computed(() => {
+  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Got a Minute?')
+})
+
+const WheneverTasks = computed(() => {
+  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Whenever')
+})
+
+const PendingTasks = computed(() => {
+  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Pending')
+})
 
 </script>
 
