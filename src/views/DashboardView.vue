@@ -1,12 +1,21 @@
 <template>
   <div class="h-screen flex flex-nowrap justify-center">
-    <div class=" w-64 grow-0 shrink-0 border rounded m-2">
-      <div class="flex justify-between border-b mx-1">
-        <div>In Progress</div>
-        <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('In Progress')">+</button>
+    <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2">
+      <div class="min-h-[50%]  ">
+        <div class="flex justify-between border-b mx-1">
+          <div>In Progress</div>
+          <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('In Progress')">+</button>
+        </div>
+        <TaskComponent v-for="key in InProgressTasks" :task-key="key" :key="key" />
       </div>
-      <TaskComponent v-for="key in InProgressTasks" :task-key="key" :key="key" />
+      <div class=" ">
+        <div class="flex justify-between border-b border-t mx-1">
+          <div>Pending</div>
+          <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Pending')">+</button>
+        </div>
+        <TaskComponent v-for="key in PendingTasks" :task-key="key" :key="key" />
       </div>
+    </div>
     <div class=" w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
         <div>Do Now!</div>
