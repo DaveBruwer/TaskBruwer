@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-nowrap justify-center">
+  <div @dragover="temporarilyShowBin" class="h-screen flex flex-nowrap justify-center">
     <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2">
       <div class="min-h-[50%]  ">
         <div class="flex justify-between border-b mx-1">
@@ -37,8 +37,8 @@
       </div>
       <TaskComponent v-for="key in WheneverTasks" :task-key="key" :key="key" />
     </div>
-
   </div>
+
   <dialog ref="showNewModal" id="newTaskModal" class="max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300 self-start p-4 mt-32">
     <form @submit.prevent="createTask" class="flex flex-grow flex-col justfiy-start">
       <input v-model="newv$.name.$model" type="text" class="text-black m-1 rounded" placeholder="Task Name">
@@ -74,6 +74,17 @@
       <div class="flex justify-between m-1 ">
         <button type="submit">Submit</button>
         <button @click.prevent="showNewModal.close()">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div @drop="showDelModal" @dragover="(e) => { e.preventDefault()}" class=" absolute left-1/2 bottom-0 text-5xl m-2 p-10" :class="{ hidden: !showBin}">&#128465;</div>
+  <dialog ref="delModal" class="max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300 self-start p-4 mt-32">
+    <form v-if="taskToDel" >
+      <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete <span class=" bg-red-300">{{ taskStore.tasks[taskToDel].name }}</span>?</h1>
+      <div class="flex justify-between m-1 ">
+        <button @click.prevent="deleteTask" class=" text-red-700 hover:text-white hover:bg-red-700 rounded p-1">Delete</button>
+        <button @click.prevent="() => {delModal.close()}">Cancel</button>
       </div>
     </form>
   </dialog>
@@ -158,6 +169,47 @@ function launchNewTaskModal(newTaskStatus) {
 
 //#endregion newTaskModal
 
+//#region deleteTask
+
+const showBin = ref(false)
+
+function temporarilyShowBin() {
+  if(!showBin.value) {
+    showBin.value = true
+    setTimeout(() => {
+      showBin.value = false
+    }, 500)
+  }
+}
+
+const delModal = ref()
+
+const taskToDel = ref()
+
+const showDelModal = function(e) {
+  taskToDel.value = e.dataTransfer.getData("text")
+
+  delModal.value.showModal()
+}
+
+const deleteTask = function() {
+
+  delete taskStore.tasks[taskToDel.value]
+
+  console.log(`Task deleted!`)
+
+  setTimeout(() => {
+    delModal.value.close()
+  }, 50)
+
+  taskToDel.value = ""
+
+}
+
+//#endregion deletTask
+
+//#region taskArrays
+
 const InProgressTasks = computed(() => {
   return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')
 })
@@ -177,7 +229,7 @@ const WheneverTasks = computed(() => {
 const PendingTasks = computed(() => {
   return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Pending')
 })
-
+//#endregion taskArrays
 </script>
 
 <style>
