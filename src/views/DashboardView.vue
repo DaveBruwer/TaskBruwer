@@ -111,11 +111,12 @@ async function createTask() {
 
   console.log('submit button pressed')
 
-  const isFormValid = await newv$.value.$validate()
+  const isNewFormValid = await newv$.value.$validate()
 
-  console.log(isFormValid)
+  console.log(isNewFormValid)
+  console.log(newv$.value)
 
-  if(isFormValid) {
+  if(isNewFormValid) {
     console.log('Creating task')
     
     taskStore.tasks[Date.now()] = {
@@ -137,7 +138,7 @@ async function createTask() {
 
     showNewModal.value.close()
 
-  } //if(isFormValid)
+  } //if(isNewFormValid)
 }
 
 function launchNewTaskModal(newTaskStatus) {

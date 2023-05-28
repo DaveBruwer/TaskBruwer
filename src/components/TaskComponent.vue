@@ -25,11 +25,13 @@
           </div>
         </div>
         <div>
-          <label for="priority">Priority: </label>
-          <select id="priority" class="rounded bg-transparent border" v-model="edit$.priority.$model" >
-            <option class="text-black" value="High">High</option>
-            <option class="text-black" value="Medium">Medium</option>
-            <option class="text-black" value="Low">Low</option>
+          <label for="status">Status: </label>
+          <select id="status" class="rounded bg-transparent border" v-model="edit$.status.$model" >
+            <option class="text-black" value="In Progress">In Progress</option>
+            <option class="text-black" value="Do Now!">Do Now!</option>
+            <option class="text-black" value="Got a Minute?">Got a Minute?</option>
+            <option class="text-black" value="Whenever">Whenever</option>
+            <option class="text-black" value="Pending ">Pending</option>
           </select>
         </div>
       </div>
@@ -65,7 +67,7 @@ const task = reactive({
   name: taskStore.tasks[props.taskKey].name,
   description: taskStore.tasks[props.taskKey].description,
   project: taskStore.tasks[props.taskKey].project,
-  priority: taskStore.tasks[props.taskKey].priority,
+  status: taskStore.tasks[props.taskKey].status,
   dueDate: taskStore.tasks[props.taskKey].dueDate
 })
 
@@ -77,7 +79,7 @@ const editRules = {
   name: {required, maxLength: maxLength(20)},
   description: {},
   project: {required},
-  priority: {required},
+  status: {required},
   dueDate: {}
 }
 
@@ -85,15 +87,15 @@ const edit$ = useVuelidate(editRules, task)
 
 async function updateTask() {
   
-  const isFormValid = await edit$.value.$validate()
+  const isEditFormValid = await edit$.value.$validate()
   
-  if(isFormValid) {
+  if(isEditFormValid) {
     console.log('Updating Task')
 
     taskStore.tasks[props.taskKey].name = task.name
     taskStore.tasks[props.taskKey].description = task.description
     taskStore.tasks[props.taskKey].project = task.project
-    taskStore.tasks[props.taskKey].priority = task.priority
+    taskStore.tasks[props.taskKey].status = task.status
     taskStore.tasks[props.taskKey].dueDate = task.dueDate
 
     editTaskModal.value.close()
@@ -104,7 +106,7 @@ function cancelEditModal() {
   task.name = taskStore.tasks[props.taskKey].name,
   task.description = taskStore.tasks[props.taskKey].description,
   task.project = taskStore.tasks[props.taskKey].project,
-  task.priority = taskStore.tasks[props.taskKey].priority,
+  task.status = taskStore.tasks[props.taskKey].status,
   task.dueDate = taskStore.tasks[props.taskKey].dueDate
 
   editTaskModal.value.close()
