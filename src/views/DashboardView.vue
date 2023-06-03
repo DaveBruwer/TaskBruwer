@@ -1,14 +1,14 @@
 <template>
   <div @dragover="temporarilyShowBin" class="h-screen flex flex-nowrap justify-center">
     <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2">
-      <div class="min-h-[50%]  ">
+      <div id="In Progress" class="min-h-[50%]  " @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
         <div class="flex justify-between border-b mx-1">
           <div>In Progress</div>
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('In Progress')">+</button>
         </div>
         <TaskComponent v-for="key in InProgressTasks" :task-key="key" :key="key" />
       </div>
-      <div class=" ">
+      <div id="Pending" class=" " @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
         <div class="flex justify-between border-b border-t mx-1">
           <div>Pending</div>
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Pending')">+</button>
@@ -16,21 +16,21 @@
         <TaskComponent v-for="key in PendingTasks" :task-key="key" :key="key" />
       </div>
     </div>
-    <div class=" w-64 grow-0 shrink-0 border rounded m-2">
+    <div id="Do Now!" class=" w-64 grow-0 shrink-0 border rounded m-2" @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
       <div class="flex justify-between border-b mx-1">
         <div>Do Now!</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Do Now!')">+</button>
       </div>
       <TaskComponent v-for="key in DoNowTasks" :task-key="key" :key="key" />
     </div>
-    <div class=" w-64 grow-0 shrink-0 border rounded m-2">
+    <div id="Got a Minute?" class=" w-64 grow-0 shrink-0 border rounded m-2" @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
       <div class="flex justify-between border-b mx-1">
         <div>Got a Minute?</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Got a Minute?')">+</button>
       </div>
       <TaskComponent v-for="key in GotAMinuteTasks" :task-key="key" :key="key" />
     </div>
-    <div class=" w-64 grow-0 shrink-0 border rounded m-2">
+    <div id="Whenever" class=" w-64 grow-0 shrink-0 border rounded m-2" @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
       <div class="flex justify-between border-b mx-1">
         <div>Whenever</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Whenever')">+</button>
@@ -230,6 +230,10 @@ const PendingTasks = computed(() => {
   return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Pending')
 })
 //#endregion taskArrays
+
+const onDropFunction = function(e) {
+  taskStore.tasks[e.dataTransfer.getData("text")].status = e.target.id
+}
 </script>
 
 <style>
