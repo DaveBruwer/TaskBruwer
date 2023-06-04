@@ -1,14 +1,14 @@
 <template>
   <div @dragover="temporarilyShowBin" class="h-screen flex flex-nowrap justify-center">
-    <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2">
-      <div id="In Progress" class="min-h-[50%]  " @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
+    <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2 bg-white">
+      <div id="In Progress" class="flex-grow bg-slate-500" @drop="onDropFunction" @dragover="onDragOver">
         <div class="flex justify-between border-b mx-1">
           <div>In Progress</div>
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('In Progress')">+</button>
         </div>
         <TaskComponent v-for="key in InProgressTasks" :task-key="key" :key="key" />
       </div>
-      <div id="Pending" class=" " @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
+      <div id="Pending" class=" min-h-[10em] " @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
         <div class="flex justify-between border-b border-t mx-1">
           <div>Pending</div>
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Pending')">+</button>
@@ -63,7 +63,7 @@
             <option class="text-black" value="Do Now!">Do Now!</option>
             <option class="text-black" value="Got a Minute?">Got a Minute?</option>
             <option class="text-black" value="Whenever">Whenever</option>
-            <option class="text-black" value="Pending ">Pending</option>
+            <option class="text-black" value="Pending">Pending</option>
           </select>
         </div>
       </div>
@@ -231,8 +231,17 @@ const PendingTasks = computed(() => {
 })
 //#endregion taskArrays
 
+const onDragOver = function(e) {
+  e.preventDefault()
+  console.log(e.target)
+}
+
 const onDropFunction = function(e) {
-  taskStore.tasks[e.dataTransfer.getData("text")].status = e.target.id
+  if(e.target.id) {
+    taskStore.tasks[e.dataTransfer.getData("text")].status = e.target.id
+  } else {
+    alert("cannot drop on that type of element.")
+  }
 }
 </script>
 
