@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, defineEmits } from 'vue'
 import { useTaskStore } from '../store/taskStore'
 import useVuelidate from '@vuelidate/core'
 import { required, maxLength } from '@vuelidate/validators'
@@ -118,7 +118,10 @@ function cancelEditModal() {
 
 let dragging = ref(false)
 
+const emit = defineEmits(['dragStart', 'dragEnd'])
+
 function dragStart(e) {
+  emit('dragStart')
   e.dataTransfer.setData("text", props.taskKey)
   setTimeout(() => {
     dragging.value = true
@@ -126,6 +129,7 @@ function dragStart(e) {
 }
 
 function dragEnd() {
+  emit('dragEnd')
   dragging.value = false
 }
 
