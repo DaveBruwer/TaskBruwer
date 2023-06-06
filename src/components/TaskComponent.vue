@@ -1,5 +1,5 @@
 <template>
-  <div @click.prevent="() => { editTaskModal.showModal() }" draggable=true @dragstart="dragStart" @dragend="dragEnd" class="flex cursor-grab rounded border flex-row justify-start mx-2 my-2 overflow-hidden h-16 w-60 bg-red-400" :class="{ 'opacity-25': dragging}">
+  <div @click.prevent="() => { editTaskModal.showModal() }" draggable=true @dragstart="dragStart" @dragend="dragEnd" class="flex cursor-grab rounded border flex-row justify-start mx-2 my-2 overflow-hidden h-16 w-60 bg-red-400" :class="{ 'opacity-25': dragging, 'z-[999]': dragging}">
     <div class="text-sm w-6 " :style="{ 'background-color': taskStore.projects[taskStore.tasks[taskKey].project].colour}"></div>
     <div class="relative grow">
       <div class="absolute top-0 left-0 mx-1">{{taskStore.tasks[taskKey].name}}</div>
@@ -121,10 +121,11 @@ let dragging = ref(false)
 const emit = defineEmits(['dragStart', 'dragEnd'])
 
 function dragStart(e) {
-  emit('dragStart')
+  dragging.value = true
   e.dataTransfer.setData("text", props.taskKey)
+
   setTimeout(() => {
-    dragging.value = true
+    emit('dragStart')
   }, 10)
 }
 

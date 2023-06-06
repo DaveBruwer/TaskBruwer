@@ -1,5 +1,5 @@
 <template>
-  <div @dragover="busyDragging" class="h-screen flex flex-nowrap justify-center">
+  <div class="h-screen flex flex-nowrap justify-center">
     <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2 bg-white">
       <div class="relative flex-grow bg-slate-500">
         <div class="flex justify-between border-b mx-1">
@@ -7,36 +7,40 @@
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('In Progress')">+</button>
         </div>
         <TaskComponent v-for="key in InProgressTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
-        <div id="In Progress" class="bg-red-400 w-full h-full absolute top-0" :class="[nowDragging ? 'z-[99]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
+        <div id="In Progress" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
       </div>
-      <div id="Pending" class=" min-h-[10em] " @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
+      <div class="relative min-h-[10em] ">
         <div class="flex justify-between border-b border-t mx-1">
           <div>Pending</div>
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Pending')">+</button>
         </div>
         <TaskComponent v-for="key in PendingTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
+        <div id="Pending" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
       </div>
     </div>
-    <div id="Do Now!" class=" w-64 grow-0 shrink-0 border rounded m-2" @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
+    <div class="relative w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
         <div>Do Now!</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Do Now!')">+</button>
       </div>
       <TaskComponent v-for="key in DoNowTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
+      <div id="Do Now!" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
     </div>
-    <div id="Got a Minute?" class=" w-64 grow-0 shrink-0 border rounded m-2" @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
+    <div class="relative w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
         <div>Got a Minute?</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Got a Minute?')">+</button>
       </div>
       <TaskComponent v-for="key in GotAMinuteTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
+      <div id="Got a Minute?" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
     </div>
-    <div id="Whenever" class=" w-64 grow-0 shrink-0 border rounded m-2" @drop="onDropFunction" @dragover="(e) => { e.preventDefault()}">
+    <div class="relative w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
         <div>Whenever</div>
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Whenever')">+</button>
       </div>
       <TaskComponent v-for="key in WheneverTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
+      <div id="Whenever" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
     </div>
   </div>
 
@@ -238,6 +242,8 @@ const onDragOver = function(e) {
 }
 
 const onDropFunction = function(e) {
+
+  nowDragging.value = false
   
   if(e.target.id) {
     taskStore.tasks[e.dataTransfer.getData("text")].status = e.target.id
