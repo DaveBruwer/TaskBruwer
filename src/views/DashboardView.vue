@@ -7,7 +7,7 @@
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('In Progress')">+</button>
         </div>
         <TaskComponent v-for="key in InProgressTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
-        <div id="In Progress" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
+        <div id="In Progress" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[997]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
       </div>
       <div class="relative min-h-[10em] ">
         <div class="flex justify-between border-b border-t mx-1">
@@ -15,7 +15,7 @@
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Pending')">+</button>
         </div>
         <TaskComponent v-for="key in PendingTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
-        <div id="Pending" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
+        <div id="Pending" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[997]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
       </div>
     </div>
     <div class="relative w-64 grow-0 shrink-0 border rounded m-2">
@@ -24,7 +24,7 @@
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Do Now!')">+</button>
       </div>
       <TaskComponent v-for="key in DoNowTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
-      <div id="Do Now!" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
+      <div id="Do Now!" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[997]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
     </div>
     <div class="relative w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
@@ -32,7 +32,7 @@
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Got a Minute?')">+</button>
       </div>
       <TaskComponent v-for="key in GotAMinuteTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
-      <div id="Got a Minute?" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
+      <div id="Got a Minute?" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[997]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
     </div>
     <div class="relative w-64 grow-0 shrink-0 border rounded m-2">
       <div class="flex justify-between border-b mx-1">
@@ -40,7 +40,7 @@
         <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('Whenever')">+</button>
       </div>
       <TaskComponent v-for="key in WheneverTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
-      <div id="Whenever" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[998]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
+      <div id="Whenever" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[997]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
     </div>
   </div>
 
@@ -83,7 +83,7 @@
     </form>
   </dialog>
 
-  <div @drop="showDelModal" @dragover="(e) => { e.preventDefault()}" class=" absolute left-1/2 bottom-0 text-5xl m-2 p-10" :class="{ hidden: !nowDragging}">&#128465;</div>
+  <div @drop="showDelModal" @dragover="(e) => { e.preventDefault()}" class=" absolute left-1/2 bottom-0 text-5xl m-2 p-10 z-[998]" :class="{ hidden: !nowDragging}">&#128465;</div>
   <dialog ref="delModal" class="max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300 self-start p-4 mt-32">
     <form v-if="taskToDel" >
       <h1 class=" text-red-700 font-bold text-center">Warning! Are you sure you want to permanently delete <span class=" bg-red-300">{{ taskStore.tasks[taskToDel].name }}</span>?</h1>
@@ -217,7 +217,9 @@ const deleteTask = function() {
 //#region taskArrays
 
 const InProgressTasks = computed(() => {
-  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')
+  const _inProgressTasks = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')
+  console.log(_inProgressTasks)
+  return _inProgressTasks
 })
 
 const DoNowTasks = computed(() => {
