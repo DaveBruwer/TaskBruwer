@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen flex flex-nowrap justify-center">
-    <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2 bg-white">
-      <div class="relative flex-grow bg-slate-500">
+    <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2">
+      <div class="relative flex-grow">
         <div class="flex justify-between border-b mx-1">
           <div>In Progress</div>
           <button class=" text-xl px-2 py-0 my-0" @click.prevent="launchNewTaskModal('In Progress')">+</button>
@@ -100,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useTaskStore } from '../store/taskStore'
 import TaskComponent from '../components/TaskComponent.vue'
 import useVuelidate from '@vuelidate/core'
@@ -214,29 +214,59 @@ const deleteTask = function() {
 
 //#endregion deletTask
 
+//#region onBeforeMount
+
+let InProgressTasks = ref()
+console.log(InProgressTasks.value)
+let DoNowTasks = ref()
+let GotAMinuteTasks = ref()
+let WheneverTasks = ref()
+let PendingTasks = ref()
+
+onMounted(() => {
+
+  InProgressTasks.value = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')
+
+  console.log(taskStore.tasks)
+  console.log(Object.keys(taskStore.tasks))
+  console.log(InProgressTasks.value)
+
+  DoNowTasks.value = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Do Now!')
+
+  GotAMinuteTasks.value = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Got a Minute?')
+
+  WheneverTasks.value = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Whenever')
+
+  PendingTasks.value = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Pending')
+
+})
+
+
+//#endregion onBeforeMount
+
 //#region taskArrays
 
-const InProgressTasks = computed(() => {
-  const _inProgressTasks = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')
-  console.log(_inProgressTasks)
-  return _inProgressTasks
-})
+// const InProgressTasks = computed(() => {
+//   const _inProgressTasks = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')
+//   console.log(_inProgressTasks)
+//   return _inProgressTasks
+// })
 
-const DoNowTasks = computed(() => {
-  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Do Now!')
-})
+// const DoNowTasks = computed(() => {
+//   return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Do Now!')
+// })
 
-const GotAMinuteTasks = computed(() => {
-  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Got a Minute?')
-})
+// const GotAMinuteTasks = computed(() => {
+//   return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Got a Minute?')
+// })
 
-const WheneverTasks = computed(() => {
-  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Whenever')
-})
+// const WheneverTasks = computed(() => {
+//   return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Whenever')
+// })
 
-const PendingTasks = computed(() => {
-  return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Pending')
-})
+// const PendingTasks = computed(() => {
+//   return Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Pending')
+// })
 //#endregion taskArrays
 
 const onDragOver = function(e) {

@@ -10,7 +10,8 @@ export const useTaskStore = defineStore('task', {
     }
   }),
   getters: {
-    listOfProjects: (state) => Object.values(state.projects).map((project) => project.name)
+    listOfProjects: (state) => Object.values(state.projects).map((project) => project.name),
+    
   }
 })
 
