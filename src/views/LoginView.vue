@@ -13,9 +13,9 @@
         <button :disabled="disableLogin" type="submit">Log In</button>
         <router-link to="/register">Register</router-link>
       </div>
-      <button @click.prevent="() => {showModal = true}" class="m-2 self-end">Forgot Password</button>
+      <button @click.prevent="() => {forgotPassowrdModal.showModal()}" class="m-2 self-end">Forgot Password</button>
     </form>
-    <base-modal class="flex-grow" :class="[showModal ? 'flex' : 'hidden']">
+    <dialog ref="forgotPassowrdModal" class="max-w-md rounded bg-gradient-to-r dark:from-zinc-900 dark:to-slate-600 from-slate-200 to-slate-300  p-4 self-start mt-32">
       <form @submit.prevent="resetPassword" class="flex flex-grow flex-col justfiy-start">
         <input v-model="resetV$.email.$model" type="email" name="email" placeholder="Email" class="text-black m-1 rounded">
         <div class=" text-sm mb-1">
@@ -24,22 +24,21 @@
         <div v-if="displayEmailMessage" class=" font-bold">{{ displayEmailMessage }}.</div>
         <div class="flex justify-between m-1">
           <button type="submit">Submit</button>
-          <button @click.prevent="() => {showModal = false}">Close</button>
+          <button @click.prevent="() => {forgotPassowrdModal.close()}">Close</button>
         </div>
       </form>
-    </base-modal>
+    </dialog>
   </div>
   
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email } from '@vuelidate/validators'
-import { sendPasswordResetEmail, signInWithEmailAndPassword } from '@firebase/auth';
-import { auth } from '../firebase';
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from '@firebase/auth'
+import { auth } from '../firebase'
 import { useRouter } from 'vue-router'
-import BaseModal from '../components/BaseModal.vue'
 
 const router = useRouter()
 
@@ -71,12 +70,12 @@ async function submitFn() {
     console.log("logging in user . . .")
 
     await signInWithEmailAndPassword(auth, formData.email, formData.password)
-    .then(() => {
-      router.push('/')
-    }).catch((error) => {
-      console.log(error.message)
-      alert(error.message)
-    })
+      .then(() => {
+        router.push('/')
+      }).catch((error) => {
+        console.log(error.message)
+        alert(error.message)
+      })
   } else {
     console.log("Form fields not valid.")
     disableLogin.value = false
@@ -85,7 +84,7 @@ async function submitFn() {
 //#endregion Login
 
 //#region forgot password
-const showModal = ref(false)
+const forgotPassowrdModal = ref()
 const disableForgotPassword = ref(false)
 const displayEmailMessage = ref("")
 
@@ -109,16 +108,17 @@ async function resetPassword() {
     displayEmailMessage.value = `Please wait...`
 
     await sendPasswordResetEmail(auth, resetFormData.email)
-    .then(() => {
-      displayEmailMessage.value = `A password reset email has been sent to ${resetFormData.email}`
-      disableForgotPassword.value = false
-    }).catch((error) => {
-      console.log(error.message)
-      alert(error.message)
-      disableForgotPassword.value = false
-      displayEmailMessage.value = ""
-      showModal.value = false
-    })   
+      .then(() => {
+        displayEmailMessage.value = `A password reset email has been sent to ${resetFormData.email}`
+        disableForgotPassword.value = false
+      }).catch((error) => {
+        console.log(error.message)
+        alert(error.message)
+        disableForgotPassword.value = false
+        displayEmailMessage.value = ""
+        forgotPassowrdModal.value.close()
+
+      })   
   } else {
     console.log("Form fields not valid.")
     disableForgotPassword.value = false
