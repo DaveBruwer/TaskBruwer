@@ -6,14 +6,14 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '../store/authStore'
 import { useTaskStore } from '../store/taskStore'
+import { tempState } from '../store/tempState'
 
 const taskStore = useTaskStore()
-const authStore = useAuthStore()
 
 function logTaskStore() {
   console.log(taskStore.$state)
+  console.log(tempState.store)
 }
   
 </script>

@@ -100,7 +100,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
+import { useAuthStore } from '../store/authStore'
 import { useTaskStore } from '../store/taskStore'
 import TaskComponent from '../components/TaskComponent.vue'
 import useVuelidate from '@vuelidate/core'
@@ -108,6 +109,7 @@ import { required, maxLength } from '@vuelidate/validators'
 
 
 const taskStore = useTaskStore()
+const authStore = useAuthStore()
 
 // main form data for creating and updating tasks
 const taskData = reactive({
@@ -214,22 +216,18 @@ const deleteTask = function() {
 
 //#endregion deletTask
 
-//#region onBeforeMount
+//#region taskArrays
 
 let InProgressTasks = ref()
-console.log(InProgressTasks.value)
 let DoNowTasks = ref()
 let GotAMinuteTasks = ref()
 let WheneverTasks = ref()
 let PendingTasks = ref()
 
-onMounted(() => {
+function loadTaskArrays() {
+
 
   InProgressTasks.value = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')
-
-  console.log(taskStore.tasks)
-  console.log(Object.keys(taskStore.tasks))
-  console.log(InProgressTasks.value)
 
   DoNowTasks.value = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Do Now!')
 
@@ -239,12 +237,17 @@ onMounted(() => {
 
   PendingTasks.value = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'Pending')
 
+}
+
+loadTaskArrays()
+
+watch( () => authStore.dataInit ,(dataInit) => {
+
+  if (dataInit) {
+    loadTaskArrays()
+  }
 })
 
-
-//#endregion onBeforeMount
-
-//#region taskArrays
 
 // const InProgressTasks = computed(() => {
 //   const _inProgressTasks = Object.keys(taskStore.tasks).filter((key) => taskStore.tasks[key].status == 'In Progress')

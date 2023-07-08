@@ -2,7 +2,7 @@
 <template>
   <Header />
   <main class="mx-2">
-    <div v-if="authStore.currentUser == 'Pending'" class=" absolute min-w-full min-h-screen bg-black bg-opacity-75  z-10">
+    <div v-if="authStore.currentUser == 'Pending' || !authStore.dataInit" class=" absolute min-w-full min-h-screen bg-black bg-opacity-75  z-10">
       <div class=" absolute top-2/4 text-5xl text-center m-auto min-w-full"> . . . LOADING . . .</div>
     </div>
       <RouterView />
