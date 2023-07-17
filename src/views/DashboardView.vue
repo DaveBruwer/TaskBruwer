@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-nowrap justify-center">
+  <div v-if="authStore.currentUser" class="h-screen flex flex-nowrap justify-center">
     <div class="flex flex-col w-64 grow-0 shrink-0 border rounded m-2">
       <div class="relative flex-grow">
         <div class="flex justify-between border-b mx-1">
@@ -41,6 +41,11 @@
       </div>
       <TaskComponent v-for="key in WheneverTasks" :task-key="key" :key="key" @dragStart="() => { nowDragging = true }" @dragEnd="() => { nowDragging = false }" />
       <div id="Whenever" class="w-full h-full absolute top-0" :class="[nowDragging ? 'z-[997]': 'z-[-1]']" @drop="onDropFunction" @dragover="onDragOver"></div>
+    </div>
+  </div>
+  <div v-else class=" absolute min-w-full min-h-screen bg-black bg-opacity-75  z-10">
+    <div class=" absolute top-2/4 text-5xl text-center m-auto min-w-full"> 
+      <router-link to="/login">Log In</router-link>
     </div>
   </div>
 
@@ -100,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, watch} from 'vue'
 import { useAuthStore } from '../store/authStore'
 import { useTaskStore } from '../store/taskStore'
 import TaskComponent from '../components/TaskComponent.vue'
@@ -211,6 +216,8 @@ const deleteTask = function() {
   }, 50)
 
   taskToDel.value = ""
+
+  console.log('deleteTask finished')
 
 }
 

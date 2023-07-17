@@ -7,6 +7,7 @@ import Account from '../views/AccountView.vue'
 import Tasks from '../views/TaskView.vue'
 import Projects from '../views/ProjectView.vue'
 
+
 const routes = [
   {
     path: '/',

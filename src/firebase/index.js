@@ -6,6 +6,7 @@ import { useTaskStore } from "../store/taskStore"
 import { config } from "../../config"
 import { tempState } from "../store/tempState"
 import { toRaw } from "vue"
+import router from "../router"
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -40,6 +41,7 @@ onAuthStateChanged(auth, (user) => {
     authStore.currentUser = user
     loadData(user.uid, taskStore.$state, authStore.dataInit)
   } else {
+    router.push('/login')
     console.log('no user')
     authStore.currentUser = null
     taskStore.$state = {
